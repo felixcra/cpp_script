@@ -14,8 +14,8 @@ namespace cs {
 using string = std::string;
 
 template <typename T>
+requires std::is_arithmetic_v<T>
 class Primitive : public Object {
-static_assert(std::is_arithmetic_v<T>);
 
 public:
 

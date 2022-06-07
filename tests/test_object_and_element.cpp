@@ -26,28 +26,6 @@ const std::string name;
 };
 
 TEST_CASE("test_Element_l_value_construction") {
-    class A {};
-
-    A a;
-    try {
-        Element e(a);
-    } catch(const Element::InvalidArgumentException& e) {
-        REQUIRE(strcmp(e.what(), "Cannot initialize Element with l-value class reference of non-polymorphic "
-                                 "type.") == 0);
-    }
-
-    class B {
-        public:
-            virtual ~B() {}
-    };
-    B b;
-    try {
-        Element e(b);
-    } catch(const Element::InvalidArgumentException& e) {
-        REQUIRE(strcmp(e.what(), "Cannot initialize Element with l-value class reference not inheriting "
-                                 "from Object.") == 0);
-    }
-
     class C : public Object {
         public:
             C() {}
@@ -67,26 +45,6 @@ TEST_CASE("test_Element_l_value_construction") {
 }
 
 TEST_CASE("test_Element_r_value_construction") {
-    class A {};
-
-    try {
-        Element e{A()};
-    } catch(const Element::InvalidArgumentException& e) {
-        REQUIRE(strcmp(e.what(), "Cannot initialize Element with l-value class reference of non-polymorphic "
-                                 "type.") == 0);
-    }
-
-    class B {
-        public:
-            virtual ~B() {}
-    };
-    try {
-        Element e{B()};
-    } catch(const Element::InvalidArgumentException& e) {
-        REQUIRE(strcmp(e.what(), "Cannot initialize Element with l-value class reference not inheriting "
-                                 "from Object.") == 0);
-    }
-
     class C : public Object {
         public:
             C() {}
@@ -105,8 +63,8 @@ TEST_CASE("test_Element_r_value_construction") {
 }
 
 TEST_CASE("test_register") {
-    static_assert(std::is_copy_assignable<Element>::value);
-    static_assert(std::is_copy_constructible<Element>::value);
+    static_assert(std::is_copy_assignable_v<Element>);
+    static_assert(std::is_copy_constructible_v<Element>);
 
     List l;
     l.append(Object());

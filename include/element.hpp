@@ -70,9 +70,7 @@ Element& operator=(const Element& e) {
 }
 
 template <typename T>
-explicit Element(T& v) : Element(static_cast<const T&>(v)) {}
-
-template <typename T>
+requires std::is_class_v<T> && std::is_polymorphic_v<T>
 explicit Element(const T& v) {
     if (std::is_class<T>::value) {
         // Check that T inherits from object
@@ -95,26 +93,18 @@ explicit Element(const T& v) {
 private:
 
 template <typename T>
+requires std::is_base_of_v<Object,T> || std::is_arithmetic_v<T>
 void set_from_r_value(T&& v) {
     if constexpr (std::is_class_v<T>) {
-        // Check that T inherits from object
-        if constexpr (!std::is_polymorphic_v<T>) {
-            throw InvalidArgumentException("Cannot initialize Element with l-value class reference of "
-                                           "non-polymorphic type.");
-        } else if constexpr (!std::is_base_of_v<Object,T>) {
-            throw InvalidArgumentException("Cannot initialize Element with l-value class reference "
-                                           "not inheriting from Object.");
+        // Create a new object and a reference to it
+        T* t;
+        if constexpr (std::is_same_v<T,Object>) {
+            t = new T();
+            t->registry_ = std::move(v.registry_);
         } else {
-            // Create a new object and a reference to it
-            T* t;
-            if constexpr (std::is_same_v<T,Object>) {
-                t = new T();
-                t->registry_ = std::move(v.registry_);
-            } else {
-                t = new T(std::move(v));
-            }
-            r_.set(*t,true);
+            t = new T(std::move(v));
         }
+        r_.set(*t,true);
     } else {
         // Create a primitive and a reference to it
         Primitive<T>* p = new Primitive<T>(v);
@@ -125,11 +115,13 @@ void set_from_r_value(T&& v) {
 public:
 
 template <typename T>
+requires std::is_base_of_v<Object,T> || std::is_arithmetic_v<T>
 explicit Element(T&& v) {
     set_from_r_value(std::move(v));
 }
 
 template <typename T>
+requires std::is_base_of_v<Object,T> || std::is_arithmetic_v<T>
 Element& operator=(T&& v) {
     set_from_r_value(std::move(v));
     return *this;
