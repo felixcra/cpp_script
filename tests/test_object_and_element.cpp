@@ -1,0 +1,121 @@
+#include <catch2/catch_test_macros.hpp>
+
+#include <string>
+#include <string.h>
+#include <type_traits>
+
+#include "object.hpp"
+#include "list.hpp"
+#include "element.hpp"
+
+using namespace cs;
+
+class NamedObject : public Object {
+public:
+
+NamedObject(const std::string&& name) : name(name) {}
+
+NamedObject(const NamedObject& no) : name(no.name) {}
+
+~NamedObject() override {
+    OBJECT_DESCTRUCT(this);
+}
+
+const std::string name;
+
+};
+
+TEST_CASE("test_Element_l_value_construction") {
+    class A {};
+
+    A a;
+    try {
+        Element e(a);
+    } catch(const Element::InvalidArgumentException& e) {
+        REQUIRE(strcmp(e.what(), "Cannot initialize Element with l-value class reference of non-polymorphic "
+                                 "type.") == 0);
+    }
+
+    class B {
+        public:
+            virtual ~B() {}
+    };
+    B b;
+    try {
+        Element e(b);
+    } catch(const Element::InvalidArgumentException& e) {
+        REQUIRE(strcmp(e.what(), "Cannot initialize Element with l-value class reference not inheriting "
+                                 "from Object.") == 0);
+    }
+
+    class C : public Object {
+        public:
+            C() {}
+
+            C(const C& c) {}
+
+            ~C() override {
+                OBJECT_DESCTRUCT(this);
+            }
+
+            bool is_equal(const Object* o) const override {
+                return o == this;
+            }
+    };
+    C c;
+    Element e(c);
+}
+
+TEST_CASE("test_Element_r_value_construction") {
+    class A {};
+
+    try {
+        Element e{A()};
+    } catch(const Element::InvalidArgumentException& e) {
+        REQUIRE(strcmp(e.what(), "Cannot initialize Element with l-value class reference of non-polymorphic "
+                                 "type.") == 0);
+    }
+
+    class B {
+        public:
+            virtual ~B() {}
+    };
+    try {
+        Element e{B()};
+    } catch(const Element::InvalidArgumentException& e) {
+        REQUIRE(strcmp(e.what(), "Cannot initialize Element with l-value class reference not inheriting "
+                                 "from Object.") == 0);
+    }
+
+    class C : public Object {
+        public:
+            C() {}
+
+            C(const C& c) {}
+
+            ~C() override {
+                OBJECT_DESCTRUCT(this);
+            }
+
+            bool is_equal(const Object* o) const override {
+                return this == o;
+            }
+    };
+    Element e{C()};
+}
+
+TEST_CASE("test_register") {
+    static_assert(std::is_copy_assignable<Element>::value);
+    static_assert(std::is_copy_constructible<Element>::value);
+
+    List l;
+    l.append(Object());
+    {
+        NamedObject named_obj("hello");
+        l.append(named_obj);
+    }
+    REQUIRE(len(l) == 2);
+    l[0].as<Object>();
+    l[1].as<NamedObject>();
+    REQUIRE(l[1].as<NamedObject>().name == "hello");
+}
