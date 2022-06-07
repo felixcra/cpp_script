@@ -119,3 +119,10 @@ TEST_CASE("test_register") {
     l[1].as<NamedObject>();
     REQUIRE(l[1].as<NamedObject>().name == "hello");
 }
+
+TEST_CASE("test_list_modification") {
+    List l;
+    l.append(Object());
+    l[0] = NamedObject("hello");
+    REQUIRE(l[0].as<NamedObject>().name == "hello");
+}

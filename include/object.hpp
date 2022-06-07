@@ -96,25 +96,37 @@ ObjectRef& operator=(const ObjectRef& r) {
     return *this;
 }
 
+private:
+
+void remove_from_registry() const {
+    // Remove this reference from the object registry
+    auto& refs    = o_->registry_->refs_;
+    const auto it = std::find(refs.begin(), refs.end(), this);
+    assert(it != refs.end());
+    refs.erase(it);
+    
+    // Delete the object if there are no more references to it and the object reference was created
+    // from an r-value reference or copied
+    if (d_ && refs.size() == 0) {
+        delete o_;
+    }
+}
+
+public:
+
 ~ObjectRef() {
     if (v_) {
-        // Remove this reference from the object registry
-        auto& refs    = o_->registry_->refs_;
-        const auto it = std::find(refs.begin(), refs.end(), this);
-        assert(it != refs.end());
-        refs.erase(it);
-
-        // Delete the object if there are no more references to it and the object reference was created
-        // from an r-value reference
-        if (d_ && refs.size() == 0) {
-            delete o_;
-        }
+        remove_from_registry();
     }
 }
 
 template <typename T>
 void set(const T& v, const bool d) {
     static_assert(std::is_base_of<Object,T>::value);
+
+    if (v_) {
+        remove_from_registry();
+    }
 
     o_ = &v;
     v_ = true;

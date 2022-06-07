@@ -69,6 +69,10 @@ const Element& operator[](const int& i) const {
     return elems_.at(i);
 }
 
+Element& operator[](const int& i) {
+    return elems_.at(i);
+}
+
 friend std::ostream& operator<<(std::ostream& out, const List& l);
 
 };

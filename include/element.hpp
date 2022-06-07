@@ -92,8 +92,10 @@ explicit Element(const T& v) {
     }
 }
 
+private:
+
 template <typename T>
-explicit Element(T&& v) {
+void set_from_r_value(T&& v) {
     if constexpr (std::is_class_v<T>) {
         // Check that T inherits from object
         if constexpr (!std::is_polymorphic_v<T>) {
@@ -118,6 +120,19 @@ explicit Element(T&& v) {
         Primitive<T>* p = new Primitive<T>(v);
         r_.set(*p,true);
     }
+}
+
+public:
+
+template <typename T>
+explicit Element(T&& v) {
+    set_from_r_value(std::move(v));
+}
+
+template <typename T>
+Element& operator=(T&& v) {
+    set_from_r_value(std::move(v));
+    return *this;
 }
 
 template <typename T>
