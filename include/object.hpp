@@ -11,6 +11,10 @@
 #include <cassert>
 #include <string>
 
+#ifdef DEBUG
+#include <iostream>
+#endif
+
 namespace cs {
 
 /* Type definitions */
@@ -25,7 +29,11 @@ class ObjectRef;
 class Object {
 public:
 
-Object() : registry_(new Registry()) {}
+Object() : registry_(new Registry()) {
+#ifdef DEBUG
+    std::cout << "Object() : this = " << (void*) this << std::endl;
+#endif
+}
 
 explicit Object(Object& o) = delete;
 
@@ -121,9 +129,8 @@ public:
 }
 
 template <typename T>
-void set(const T& v, const bool d) {
-    static_assert(std::is_base_of<Object,T>::value);
-
+requires std::is_base_of_v<Object,T>
+void set(T& v, const bool d) {
     if (v_) {
         remove_from_registry();
     }
@@ -138,13 +145,17 @@ const Object* get() const {
     return o_;
 }
 
+Object* get() {
+    return o_;
+}
+
 private:
 
 friend class Object;
 friend class ObjectFriend;
 friend class Element;
 
-const Object* o_;
+Object* o_;
 
 bool v_;
 bool d_;
@@ -152,6 +163,9 @@ bool d_;
 };
 
 Object::~Object() {
+#ifdef DEBUG
+    std::cout << "~Object() : this = " << (void*) this << std::endl;
+#endif
     // registry_ might be a nullptr if the current object was moved or copied by OBJECT_DESCTRUCT
     if (registry_.get() != nullptr) {
         for (ObjectRef* ref : registry_->refs_) {

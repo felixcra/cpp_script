@@ -19,12 +19,21 @@ class Primitive : public Object {
 
 public:
 
+/* Constructors */
 explicit Primitive(const T& v) : v_(v) {}
 
 explicit Primitive(const Primitive<T>& p) : v_(p.v_) {}
 
+/* Destructor */
 ~Primitive() override {
     OBJECT_DESCTRUCT(this);
+}
+
+/* Assignment */
+Primitive& operator=(T&& v) {
+    v_ = v;
+
+    return *this;
 }
 
 bool is_equal(const Object* o) const override {
@@ -38,7 +47,7 @@ string to_string() const override {
 
 private:
 
-const T v_;
+T v_;
 
 };
 

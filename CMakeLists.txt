@@ -3,6 +3,8 @@ project(yglu)
 
 set(CMAKE_CXX_STANDARD 20)
 
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
+
 include(CTest)
 
 find_package(Catch2 3 REQUIRED)
@@ -32,4 +34,5 @@ target_include_directories(cs
 add_tests(
     test_object_and_element
     test_list
+    test_dict
 )

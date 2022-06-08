@@ -7,6 +7,10 @@
 #include <utility>
 #include <ostream>
 
+#ifdef DEBUG
+#include <iostream>
+#endif
+
 #include "object.hpp"
 #include "element.hpp"
 
@@ -24,12 +28,27 @@ vector<Element> elems_;
 
 public:
 
+/* Constructors */
 List() {}
 
-/* Constructor */
 template <typename... Types>
 explicit List(Types&&... args) {
+#ifdef DEBUG
+    std::cout << "List(Types&&... args) : this = " << (void*) this << std::endl;
+#endif
     (elems_.emplace_back(std::forward<Types>(args)),...);
+}
+
+List(const List& l) {
+#ifdef DEBUG
+    std::cout << "List(const List& l) : this = " << (void*) this << std::endl;
+#endif
+    for (const Element& e : l.elems_) elems_.emplace_back(e);
+}
+
+/* Destructor */
+~List() override {
+    OBJECT_DESCTRUCT(this);
 }
 
 /* Modification methods */
