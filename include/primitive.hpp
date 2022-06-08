@@ -32,7 +32,7 @@ bool is_equal(const Object* o) const override {
            dynamic_cast<const Primitive<T>*>(o)->v_ == v_;
 }
 
-virtual string to_string() const {
+string to_string() const override {
     return std::to_string(v_);
 }
 
