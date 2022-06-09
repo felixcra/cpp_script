@@ -25,6 +25,13 @@ const std::string name;
 
 };
 
+TEST_CASE("test_object") {
+    Object o1;
+    Object o2;
+    REQUIRE(o1 == o1);
+    REQUIRE(o1 != o2);
+}
+
 TEST_CASE("test_Element_l_value_construction") {
     class C : public Object {
         public:

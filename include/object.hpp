@@ -11,7 +11,7 @@
 #include <cassert>
 #include <string>
 
-#ifdef DEBUG
+#ifdef DEBUG_OBJECT
 #include <iostream>
 #endif
 
@@ -29,28 +29,38 @@ class ObjectRef;
 class Object {
 public:
 
+/* Constructors */
 Object() : registry_(new Registry()) {
-#ifdef DEBUG
+#ifdef DEBUG_OBJECT
     std::cout << "Object() : this = " << (void*) this << std::endl;
 #endif
 }
 
-explicit Object(Object& o) = delete;
+Object(const Object& o) {}
 
-explicit Object(const Object& o) = delete;
-
-explicit Object(const Object&& o) = delete;
-
-explicit Object(Object&& o) = delete;
-
+/* Desctructor */
 virtual ~Object();
 
+/* Boolean operators */
+bool operator==(const Object& o) const {
+    return this == &o;
+}
+
+bool operator!=(const Object& o) const {
+    return !(*this == o);
+}
+
+/* Miscellanous */
 virtual bool is_equal(const Object* o) const {
-    return this == o;
+    return *this == *o;
 }
 
 virtual string to_string() const {
     return "Object()";
+}
+
+virtual size_t hash() const {
+    return 0;
 }
 
 private:
@@ -88,21 +98,14 @@ explicit ObjectRef(const ObjectRef& r) {
     this->o_ = r.o_;
     this->v_ = r.v_;
     this->d_ = r.d_;
-    o_->add_reference(this);
+    if (r.v_) {
+        o_->add_reference(this);
+    }
 }
 
 explicit ObjectRef(ObjectRef&& r) : ObjectRef(r) {}
 
 explicit ObjectRef(const ObjectRef&& r) : ObjectRef(r) {}
-
-ObjectRef& operator=(const ObjectRef& r) {
-    this->o_ = r.o_;
-    this->v_ = r.v_;
-    this->d_ = r.d_;
-    o_->add_reference(this);
-
-    return *this;
-}
 
 private:
 
@@ -122,7 +125,28 @@ void remove_from_registry() const {
 
 public:
 
+ObjectRef& operator=(const ObjectRef& r) {
+    if (v_) {
+        remove_from_registry();
+    }
+
+    this->o_ = r.o_;
+    this->v_ = r.v_;
+    this->d_ = r.d_;
+    if (r.v_) {
+        o_->add_reference(this);
+    }
+
+    return *this;
+}
+
 ~ObjectRef() {
+#ifdef DEBUG_OBJECT
+    std::cout << "~ObjectRef() : this = " << (void*) this << " o_ = " << (void*) o_;
+    std::cout << " v = " << v_ << " d = " << d_;
+    std::cout << " o_->registry_->refs_.size() ";
+    std::cout << (o_->registry_ != nullptr ? o_->registry_->refs_.size() : 0) << std::endl;
+#endif
     if (v_) {
         remove_from_registry();
     }
@@ -141,11 +165,11 @@ void set(T& v, const bool d) {
     v.add_reference(this);
 }
 
-const Object* get() const {
+const Object* c_get() const {
     return o_;
 }
 
-Object* get() {
+Object* get() const {
     return o_;
 }
 
@@ -161,18 +185,6 @@ bool v_;
 bool d_;
 
 };
-
-Object::~Object() {
-#ifdef DEBUG
-    std::cout << "~Object() : this = " << (void*) this << std::endl;
-#endif
-    // registry_ might be a nullptr if the current object was moved or copied by OBJECT_DESCTRUCT
-    if (registry_.get() != nullptr) {
-        for (ObjectRef* ref : registry_->refs_) {
-            ref->v_ = false;
-        }
-    }
-}
 
 class ObjectFriend {
 
@@ -204,6 +216,23 @@ void OBJECT_DESCTRUCT(T* o) {
     static_assert(std::is_copy_constructible_v<T>);
 
     ObjectFriend::OBJECT_DESCTRUCT(o);
+}
+
+Object::~Object() {
+#ifdef DEBUG_OBJECT
+    std::cout << "~Object() : this = " << (void*) this << std::endl;
+#endif
+    // registry_ might be a nullptr if the current object was moved or cloned by OBJECT_DESCTRUCT
+    if (registry_ != nullptr) {
+        OBJECT_DESCTRUCT(this);
+    }
+
+    // registry_ might be a nullptr if the current object was moved or cloned by OBJECT_DESCTRUCT
+    if (registry_ != nullptr) {
+        for (ObjectRef* ref : registry_->refs_) {
+            ref->v_ = false;
+        }
+    }
 }
 
 };

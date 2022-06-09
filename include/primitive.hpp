@@ -5,6 +5,11 @@
 
 #include <type_traits>
 #include <string>
+#include <functional>
+
+#ifdef DEBUG_PRIMITIVE
+#include <iostream>
+#endif
 
 #include "object.hpp"
 
@@ -14,18 +19,29 @@ namespace cs {
 using string = std::string;
 
 template <typename T>
-requires std::is_arithmetic_v<T>
+requires std::is_arithmetic_v<std::remove_cvref_t<T>>
 class Primitive : public Object {
 
 public:
 
 /* Constructors */
-explicit Primitive(const T& v) : v_(v) {}
+explicit Primitive(const T& v) : v_(v) {
+#ifdef DEBUG_PRIMITIVE
+    std::cout << "Primitive(const T& v) : this = " << (void*) this << " v = " << v << std::endl;
+#endif
+}
 
-explicit Primitive(const Primitive<T>& p) : v_(p.v_) {}
+explicit Primitive(const Primitive<T>& p) : v_(p.v_) {
+#ifdef DEBUG_PRIMITIVE
+    std::cout << "Primitive(const T& v) : this = " << (void*) this << " v = " << p.v_ << std::endl;
+#endif
+}
 
 /* Destructor */
 ~Primitive() override {
+#ifdef DEBUG_PRIMITIVE
+    std::cout << "~Primitive() : this = " << (void*) this << " v = " << v_ << std::endl;
+#endif
     OBJECT_DESCTRUCT(this);
 }
 
@@ -36,6 +52,7 @@ Primitive& operator=(T&& v) {
     return *this;
 }
 
+/* Miscellanous */
 bool is_equal(const Object* o) const override {
     return dynamic_cast<const Primitive<T>*>(o) != nullptr &&
            dynamic_cast<const Primitive<T>*>(o)->v_ == v_;
@@ -45,9 +62,16 @@ string to_string() const override {
     return std::to_string(v_);
 }
 
+// TODO: Use the Python hashing function instead
+// https://stackoverflow.com/questions/2070276/where-can-i-find-source-or-algorithm-of-pythons-hash-function
+size_t hash() const override {
+    return hash_(v_);
+}
+
 private:
 
 T v_;
+std::hash<T> hash_;
 
 };
 
