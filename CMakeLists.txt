@@ -37,6 +37,7 @@ target_include_directories(cs
 
 add_tests(
     test_object_and_element
+    test_primitive
     test_list
     test_dict
 )

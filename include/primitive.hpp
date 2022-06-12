@@ -51,6 +51,11 @@ Primitive& operator=(T&& v) {
     return *this;
 }
 
+/* Getter */
+T get() const {
+    return v_;
+}
+
 /* Miscellanous */
 bool is_equal(const Object* o) const override {
     return dynamic_cast<const Primitive<T>*>(o) != nullptr &&
