@@ -5,12 +5,20 @@
 
 using namespace cs;
 
-TEST_CASE("test_simple_access") {
+TEST_CASE("test_simple_access_1") {
     Dict d;
     d[Primitive(2)] = Primitive(3);
     REQUIRE(d[Primitive(2)] == 3);
     REQUIRE(d[2] == 3);
     REQUIRE(d[2] == Primitive(3));
+}
+
+TEST_CASE("test_simple_access_2") {
+    Dict d;
+    d["1"] = 1;
+    REQUIRE(d["1"] == 1);
+    std::string s = "1";
+    REQUIRE(d[s] == 1);
 }
 
 class C : public Object {

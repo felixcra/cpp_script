@@ -17,6 +17,7 @@
 
 #include "object.hpp"
 #include "element.hpp"
+#include "string.hpp"
 
 namespace cs {
 
@@ -102,7 +103,19 @@ Dict(const Dict& d) {
 template <typename T>
 requires std::is_arithmetic_v<std::remove_cvref_t<T>>
 Element& operator[](T&& v) {
-    return (*this)[Primitive(v)];
+    return (*this)[Primitive(std::forward<T>(v))];
+}
+
+Element& operator[](const char* s) {
+    return (*this)[String(s)];
+}
+
+Element& operator[](string&& s) {
+    return (*this)[String(std::move(s))];
+}
+
+Element& operator[](const string& s) {
+    return (*this)[String(s)];
 }
 
 template <typename T>
