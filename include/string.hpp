@@ -16,7 +16,7 @@ namespace cs {
 /* Type definitions */
 using string = std::string;
 
-class String : public Object {
+class String : public virtual Object {
 public:
 
 /* Constructors */

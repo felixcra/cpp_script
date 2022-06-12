@@ -37,9 +37,9 @@ using string        = std::string;
 template <typename T>
 using unique_ptr    = std::unique_ptr<T>;
 
-class Dict : public Object {
+class Dict : public virtual Object {
 
-class PlaceHolder : public Object {
+class PlaceHolder : public virtual Object {
 public:
 
 /* Constructors */

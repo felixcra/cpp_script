@@ -20,7 +20,7 @@ using string = std::string;
 
 template <typename T>
 requires std::is_arithmetic_v<std::remove_cvref_t<T>>
-class Primitive : public Object {
+class Primitive : public virtual Object {
 public:
 
 /* Constructors */

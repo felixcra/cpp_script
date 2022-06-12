@@ -20,7 +20,7 @@ namespace cs {
 template <typename T>
 using vector = std::vector<T>;
 
-class List : public Object {
+class List : public virtual Object {
 
 friend class ListFriend;
 
