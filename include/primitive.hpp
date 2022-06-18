@@ -39,9 +39,12 @@ explicit Primitive(const Primitive<T>& p) : v_(p.v_) {
 /* Destructor */
 ~Primitive() override {
 #ifdef DEBUG_PRIMITIVE
-    std::cout << "~Primitive() : this = " << (void*) this << " v = " << v_ << std::endl;
+    std::cout << "Entering ~Primitive() : this = " << (void*) this << " v = " << v_ << std::endl;
 #endif
     OBJECT_DESCTRUCT(this);
+#ifdef DEBUG_PRIMITIVE
+    std::cout << "Leaving ~Primitive() : this = " << (void*) this << " v = " << v_ << std::endl;
+#endif
 }
 
 /* Assignment */

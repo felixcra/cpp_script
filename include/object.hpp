@@ -224,7 +224,7 @@ void OBJECT_DESCTRUCT(T* o) {
 
 Object::~Object() {
 #ifdef DEBUG_OBJECT
-    std::cout << "~Object() : this = " << (void*) this << std::endl;
+    std::cout << "Entering ~Object() : this = " << (void*) this << std::endl;
 #endif
     // registry_ might be a nullptr if the current object was moved or cloned by OBJECT_DESCTRUCT
     if (registry_ != nullptr) {
@@ -237,6 +237,9 @@ Object::~Object() {
             ref->v_ = false;
         }
     }
+#ifdef DEBUG_OBJECT
+    std::cout << "Leaving ~Object() : this = " << (void*) this << std::endl;
+#endif
 }
 
 };
