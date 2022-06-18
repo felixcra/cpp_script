@@ -58,7 +58,7 @@ explicit PlaceHolder(const PlaceHolder& p) {
 /* Destructor */
 ~PlaceHolder() override {
 #ifdef DEBUG_DICT
-    std::cout << "~PlaceHolder(const PlaceHolder& p) : this = " << (void*) this << std::endl;
+    std::cout << "~PlaceHolder() : this = " << (void*) this << std::endl;
 #endif
     OBJECT_DESCTRUCT(this);
 }
@@ -96,6 +96,9 @@ Dict(const Dict& d) {
 
 /* Destructor */
 ~Dict() override {
+#ifdef DEBUG_DICT
+    std::cout << "~Dict() : this = " << (void*) this << std::endl;
+#endif
     OBJECT_DESCTRUCT(this);
 }
 
