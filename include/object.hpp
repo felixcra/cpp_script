@@ -36,7 +36,11 @@ Object() : registry_(new Registry()) {
 #endif
 }
 
-Object(const Object& o) {}
+Object(const Object& o) {
+#ifdef DEBUG_OBJECT
+    std::cout << "Object(const Object& o) : this = " << (void*) this << " o.this = " << (void*) &o << std::endl;
+#endif
+}
 
 /* Desctructor */
 virtual ~Object();
