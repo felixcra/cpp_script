@@ -17,6 +17,7 @@
 
 #include "object.hpp"
 #include "primitive.hpp"
+#include "string.hpp"
 
 namespace cs {
 
@@ -62,7 +63,8 @@ Element(const Element& e) : r_(e.r_) {
 
 template <typename T>
 requires (std::is_base_of_v<Object,std::remove_reference_t<T>> ||
-          std::is_arithmetic_v<std::remove_reference_t<T>>)
+          std::is_arithmetic_v<std::remove_reference_t<T>> ||
+          std::is_same_v<T,string>)
 explicit Element(T&& v) {
     using T_ = std::remove_reference_t<T>;
 
@@ -71,7 +73,11 @@ explicit Element(T&& v) {
         // Create a reference to the object
         r_.set(v,false);
     } else {
-        if constexpr (std::is_class_v<T>) {
+        if constexpr (std::is_same_v<T,string>) {
+            // Create a string object a reference to it
+            String* s = new String(v);
+            r_.set(*s,true);
+        } else if constexpr (std::is_class_v<T>) {
             // Create a new object and a reference to it
             T* t;
             if constexpr (std::is_same_v<T,Object>) {
@@ -123,6 +129,9 @@ Element& operator=(T&& v) {
     }
 }
 
+explicit Element(const char* s) : Element(string(s))
+{}
+
 Element& operator=(const Element& e) {
     r_ = e.r_;
 
@@ -138,6 +147,18 @@ bool operator==(const Element& e) const {
 
 bool operator!=(const Element& e) const {
     return !(*this == e);
+}
+
+bool operator==(const string& s) const {
+    assert(r_.v_);
+
+    String s_(s);
+
+    return r_.o_->is_equal(&s_);
+}
+
+bool operator!=(const string& s) const {
+    return !(*this == s);
 }
 
 template <typename T>

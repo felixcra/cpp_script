@@ -41,3 +41,14 @@ TEST_CASE("test_list_4") {
     REQUIRE(i == 3);
     REQUIRE(l[0] == 4);
 }
+
+TEST_CASE("test_list_5") {
+    List l1, l2;
+    l1.append(std::string("hello"));
+    REQUIRE(l1[0] == "hello");
+    REQUIRE(l1[0] != "hellox");
+    REQUIRE(l1[0] == string("hello"));
+    REQUIRE(l1[0] != string("hellox"));
+    l2.append("hello");
+    REQUIRE(l1[0] == l2[0]);
+}
