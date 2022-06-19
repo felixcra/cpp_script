@@ -46,6 +46,15 @@ explicit String(const String& s) : s_(s.s_) {
     OBJECT_DESCTRUCT(this);
 }
 
+/* Boolean operators */
+bool operator==(const string& s) const {
+    return s_ == s;
+}
+
+bool operator!=(const string& s) const {
+    return !(*this == s);
+}
+
 /* Miscellanous */
 bool is_equal(const Object* o) const override {
     return dynamic_cast<const String*>(o) != nullptr &&

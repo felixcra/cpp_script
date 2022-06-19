@@ -40,4 +40,5 @@ add_tests(
     test_primitive
     test_list
     test_dict
+    test_string
 )
