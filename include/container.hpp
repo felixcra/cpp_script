@@ -17,11 +17,9 @@ template <typename T>
 using vector = std::vector<T>;
 
 class Container {
-protected:
+public:
 
 vector<Element> elems_;
-
-public:
 
 friend class Iterator;
 

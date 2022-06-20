@@ -233,6 +233,11 @@ std::ostream& operator<<(std::ostream& out, const Element& e) {
     return out << e.to_string();
 }
 
+template <typename T>
+bool isinstance(const Element& e) {
+    return dynamic_cast<const T*>(e.get().c_get());
+}
+
 };
 
 namespace std {
