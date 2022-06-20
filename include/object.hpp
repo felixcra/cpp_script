@@ -45,18 +45,9 @@ Object(const Object& o) {
 /* Desctructor */
 virtual ~Object();
 
-/* Boolean operators */
-bool operator==(const Object& o) const {
-    return this == &o;
-}
-
-bool operator!=(const Object& o) const {
-    return !(*this == o);
-}
-
 /* Miscellanous */
 virtual bool is_equal(const Object* o) const {
-    return *this == *o;
+    return this == o;
 }
 
 virtual string to_string() const {
@@ -65,6 +56,15 @@ virtual string to_string() const {
 
 virtual size_t hash() const {
     return 0;
+}
+
+/* Boolean operators */
+bool operator==(const Object& o) const {
+    return this->is_equal(&o);
+}
+
+bool operator!=(const Object& o) const {
+    return !(*this == o);
 }
 
 private:

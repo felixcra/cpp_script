@@ -6,8 +6,9 @@
 #include <vector>
 #include <utility>
 #include <ostream>
+#include <string>
 
-#ifdef DEBUG
+#ifdef DEBUG_LIST
 #include <iostream>
 #endif
 
@@ -19,6 +20,7 @@ namespace cs {
 /* Type definitions */
 template <typename T>
 using vector = std::vector<T>;
+using string = std::string;
 
 class List : public virtual Object {
 
@@ -33,14 +35,14 @@ List() {}
 
 template <typename... Types>
 explicit List(Types&&... args) {
-#ifdef DEBUG
+#ifdef DEBUG_LIST
     std::cout << "List(Types&&... args) : this = " << (void*) this << std::endl;
 #endif
     (elems_.emplace_back(std::forward<Types>(args)),...);
 }
 
 List(const List& l) {
-#ifdef DEBUG
+#ifdef DEBUG_LIST
     std::cout << "List(const List& l) : this = " << (void*) this << std::endl;
 #endif
     for (const Element& e : l.elems_) elems_.emplace_back(e);
@@ -66,8 +68,13 @@ Element& operator[](const int& i) {
     return elems_.at(i);
 }
 
-/* Boolean operators */
-bool operator==(const List& l) const {
+/* Miscellaneous */
+bool is_equal(const Object* o) const override {
+    // Check if o is a list
+    if (dynamic_cast<const List*>(o) == nullptr) return false;
+    const List& l = *dynamic_cast<const List*>(o);
+
+    // Check that o has the correct number of elements
     if (elems_.size() != l.elems_.size()) return false;
     if (elems_.size() == 0 && l.elems_.size() == 0) return true;
 
@@ -80,11 +87,6 @@ bool operator==(const List& l) const {
     return true;
 }
 
-bool operator!=(const List& l) const {
-    return !(*this == l);
-}
-
-/* Miscellaneous */
 string to_string() const override {
     string s = "[";
     for (size_t i = 0; i < elems_.size(); ++i) {
