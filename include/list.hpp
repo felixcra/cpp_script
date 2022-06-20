@@ -14,6 +14,7 @@
 
 #include "object.hpp"
 #include "element.hpp"
+#include "container.hpp"
 
 namespace cs {
 
@@ -34,6 +35,8 @@ public:
 List() {}
 
 template <typename... Types>
+requires ((std::tuple_size_v<std::tuple<Types...>> != 1) ||
+         (!std::is_base_of_v<Container,std::remove_cvref_t<std::tuple_element_t<0,std::tuple<Types...>>>>))
 explicit List(Types&&... args) {
 #ifdef DEBUG_LIST
     std::cout << "List(Types&&... args) : this = " << (void*) this << std::endl;
@@ -46,6 +49,15 @@ List(const List& l) {
     std::cout << "List(const List& l) : this = " << (void*) this << std::endl;
 #endif
     for (const Element& e : l.elems_) elems_.emplace_back(e);
+}
+
+template <typename C>
+requires std::is_base_of_v<Container,C>
+explicit List(const C& c) {
+#ifdef DEBUG_LIST
+    std::cout << "List(const C& c) : this = " << (void*) this << std::endl;
+#endif
+    for (const Element& e : c) elems_.emplace_back(e);
 }
 
 /* Destructor */

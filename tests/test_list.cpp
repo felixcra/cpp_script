@@ -3,6 +3,7 @@
 #include "list.hpp"
 #include "primitive.hpp"
 #include "element.hpp"
+#include "tuple.hpp"
 
 using namespace cs;
 
@@ -87,4 +88,10 @@ TEST_CASE("test_list_6") {
     List l;
     Derived d;
     l.append(d);
+}
+
+TEST_CASE("test_from_tuple") {
+    Tuple t1(1,2,3);
+    List l1(t1);
+    REQUIRE(l1.to_string() == "[1,2,3]");
 }

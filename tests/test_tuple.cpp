@@ -15,7 +15,7 @@ TEST_CASE("test_tuple_1") {
     REQUIRE(t1 == t4);
 }
 
-TEST_CASE("test_list_2") {
+TEST_CASE("test_tuple_2") {
     Tuple t0(0);
     Tuple t1(1,2,3);
     Tuple t2(4,5,6);
@@ -29,5 +29,8 @@ TEST_CASE("test_tuple_3") {
     int i = 4;
     Tuple t(i);
     REQUIRE(t[0] == 4);
+    for (auto e : t) ;
+    for (Element& e : t) ;
+    for (const Element& e : t) ;
+    for (Element e : t) ;
 }
-

@@ -3,7 +3,6 @@
  */ 
 #pragma once
 
-#include <vector>
 #include <string>
 
 #ifdef DEBUG
@@ -12,17 +11,14 @@
 
 #include "object.hpp"
 #include "element.hpp"
+#include "container.hpp"
 
 namespace cs {
 
 /* Type definitions */
-template <typename T>
-using vector = std::vector<T>;
 using string = std::string;
 
-class Tuple : public virtual Object {
-
-vector<Element> elems_;
+class Tuple : public Container, public virtual Object {
 
 public:
 
