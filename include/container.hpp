@@ -89,7 +89,7 @@ reference operator*() {
     return c_->elems_.at(idx_);
 }
 
-private:
+protected:
 
 const Container* c_;
 int idx_;
