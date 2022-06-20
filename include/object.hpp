@@ -196,7 +196,8 @@ public:
 
 template <typename T>
 static void OBJECT_DESCTRUCT(T* o) {
-    if (o->registry_->refs_.size() > 0) {
+    // registry_ might be a nullptr if o was moved or cloned by OBJECT_DESCTRUCT
+    if (o->registry_ != nullptr && o->registry_->refs_.size() > 0) {
         // Create a copy of the object
         T* n = new T(*o);
 
@@ -226,10 +227,7 @@ Object::~Object() {
 #ifdef DEBUG_OBJECT
     std::cout << "Entering ~Object() : this = " << (void*) this << std::endl;
 #endif
-    // registry_ might be a nullptr if the current object was moved or cloned by OBJECT_DESCTRUCT
-    if (registry_ != nullptr) {
-        OBJECT_DESCTRUCT(this);
-    }
+    OBJECT_DESCTRUCT(this);
 
     // registry_ might be a nullptr if the current object was moved or cloned by OBJECT_DESCTRUCT
     if (registry_ != nullptr) {

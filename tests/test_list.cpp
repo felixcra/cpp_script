@@ -6,6 +6,36 @@
 
 using namespace cs;
 
+class Base : public virtual Object {
+public:
+
+/* Constructors */
+Base() {}
+
+explicit Base(const Base& b) {}
+
+/* Destructor */
+~Base() override {
+    OBJECT_DESCTRUCT(this);
+}
+
+};
+
+class Derived : public Base {
+public:
+
+/* Constructors */
+Derived() {}
+
+explicit Derived(const Derived& d) : Base(d) {}
+
+/* Destructor */
+~Derived() override {
+    OBJECT_DESCTRUCT(this);
+}
+
+};
+
 TEST_CASE("test_list_1") {
     List l1{1,2,3};
     List l2{1,2,3};
@@ -51,4 +81,10 @@ TEST_CASE("test_list_5") {
     REQUIRE(l1[0] != string("hellox"));
     l2.append("hello");
     REQUIRE(l1[0] == l2[0]);
+}
+
+TEST_CASE("test_list_6") {
+    List l;
+    Derived d;
+    l.append(d);
 }
