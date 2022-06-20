@@ -42,7 +42,7 @@ Object(const Object& o) {
 #endif
 }
 
-/* Desctructor */
+/* Destructor */
 virtual ~Object();
 
 /* Miscellanous */

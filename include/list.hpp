@@ -3,7 +3,6 @@
  */ 
 #pragma once
 
-#include <vector>
 #include <utility>
 #include <ostream>
 #include <string>
@@ -19,15 +18,11 @@
 namespace cs {
 
 /* Type definitions */
-template <typename T>
-using vector = std::vector<T>;
 using string = std::string;
 
-class List : public virtual Object {
+class List : public Container, public virtual Object {
 
 friend class ListFriend;
-
-vector<Element> elems_;
 
 public:
 
@@ -48,7 +43,7 @@ List(const List& l) {
 #ifdef DEBUG_LIST
     std::cout << "List(const List& l) : this = " << (void*) this << std::endl;
 #endif
-    for (const Element& e : l.elems_) elems_.emplace_back(e);
+    for (const Element& e : l.elems_) elems_.emplace_back(e,true);
 }
 
 template <typename C>
@@ -57,12 +52,18 @@ explicit List(const C& c) {
 #ifdef DEBUG_LIST
     std::cout << "List(const C& c) : this = " << (void*) this << std::endl;
 #endif
-    for (const Element& e : c) elems_.emplace_back(e);
+    for (const Element& e : c) elems_.emplace_back(e,true);
 }
 
 /* Destructor */
 ~List() override {
     OBJECT_DESCTRUCT(this);
+}
+
+/* Assignment */
+List& operator=(const List& l) {
+    for (const Element& e : l.elems_) elems_.emplace_back(e);
+    return *this;
 }
 
 /* Modification methods */

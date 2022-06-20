@@ -59,9 +59,10 @@ TEST_CASE("test_list_2") {
 
 TEST_CASE("test_list_3") {
     List l1(1,2,3,Object());
-    List l2 = l1;
-    l1[1]   = 5;
-    l1[3]   = 4;
+    List l2;
+    l2    = l1;
+    l1[1] = 5;
+    l1[3] = 4;
     REQUIRE(l2[1] == 5);
     REQUIRE(l2[2] == 3);
     REQUIRE(l1[3] == 4);
@@ -94,4 +95,23 @@ TEST_CASE("test_from_tuple") {
     Tuple t1(1,2,3);
     List l1(t1);
     REQUIRE(l1.to_string() == "[1,2,3]");
+}
+
+TEST_CASE("test_from_list_1") {
+    List l1(1,2,3);
+    List l2;
+    l2 = l1;
+    REQUIRE(l1.to_string() == "[1,2,3]");
+    REQUIRE(l2.to_string() == "[1,2,3]");
+    l1[1] = 5;
+    REQUIRE(l1.to_string() == "[1,5,3]");
+    REQUIRE(l2.to_string() == "[1,5,3]");
+}
+
+TEST_CASE("test_from_list_2") {
+    List l1(1,2,3);
+    List l2(l1);
+    l1[1] = 5;
+    REQUIRE(l1.to_string() == "[1,5,3]");
+    REQUIRE(l2.to_string() == "[1,2,3]");
 }

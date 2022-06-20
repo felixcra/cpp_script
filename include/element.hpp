@@ -48,10 +48,16 @@ const string s_;
 /* Constructors and assignment */
 Element() = delete;
 
-Element(const Element& e) : r_(e.r_) {
+Element(const Element& e, const bool clone_primitives = false) {
 #ifdef DEBUG_ELEMENT
     std::cout << "Element(const Element& e) : this = " << (void*) this << " e.this = " << (void*) &e << " r_.o_ = " << (void*) r_.o_ << std::endl;
 #endif
+    if (clone_primitives && dynamic_cast<const PrimitiveBase*>(e.r_.c_get()) != nullptr) {
+        PrimitiveBase* p = dynamic_cast<const PrimitiveBase*>(e.r_.c_get())->clone();
+        r_.set(*p,true);
+    } else {
+        r_ = e.r_;
+    }
 }
 
 #ifdef DEBUG_ELEMENT

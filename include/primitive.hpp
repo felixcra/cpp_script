@@ -18,9 +18,39 @@ namespace cs {
 /* Type definitions */
 using string = std::string;
 
+class PrimitiveBase : public virtual Object {
+public:
+
+/* Constructors */
+PrimitiveBase() {}
+
+explicit PrimitiveBase(const PrimitiveBase& p) {
+#ifdef DEBUG_PRIMITIVE
+    std::cout << "PrimitiveBase(const PrimitiveBase& p) : this = " << (void*) this << std::endl;
+#endif
+}
+
+/* Destructor */
+~PrimitiveBase() override {
+#ifdef DEBUG_PRIMITIVE
+    std::cout << "Entering ~PrimitiveBase() : this = " << (void*) this << std::endl;
+    std::cout << "Not calling OBJECT_DESCTRUCT as PrimitiveBase is abstract." << std::endl;
+    std::cout << "Leaving ~PrimitiveBase() : this = " << (void*) this << std::endl;
+#endif
+}
+
+/* Miscellanous */
+string to_string() const override {
+    return "PrimitiveBase()";
+}
+
+virtual PrimitiveBase* clone() const = 0;
+
+};
+
 template <typename T>
 requires std::is_arithmetic_v<std::remove_cvref_t<T>>
-class Primitive : public virtual Object {
+class Primitive : public PrimitiveBase {
 public:
 
 /* Constructors */
@@ -73,6 +103,10 @@ string to_string() const override {
 // https://stackoverflow.com/questions/2070276/where-can-i-find-source-or-algorithm-of-pythons-hash-function
 size_t hash() const override {
     return hash_(v_);
+}
+
+PrimitiveBase* clone() const override {
+    return new Primitive<T>(v_);
 }
 
 private:
