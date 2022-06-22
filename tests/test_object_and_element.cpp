@@ -91,3 +91,12 @@ TEST_CASE("test_list_modification") {
     l[0] = NamedObject("hello");
     REQUIRE(l[0].as<NamedObject>().name == "hello");
 }
+
+TEST_CASE("test_element") {
+    Element e(2);
+    e = 3;
+    int a = 4;
+    e = a;
+    const int b = 4;
+    e = b;
+}

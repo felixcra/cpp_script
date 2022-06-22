@@ -78,7 +78,7 @@ explicit Primitive(const Primitive<T>& p) : v_(p.v_) {
 }
 
 /* Assignment */
-Primitive& operator=(T&& v) {
+Primitive& operator=(const T& v) {
     v_ = v;
 
     return *this;

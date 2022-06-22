@@ -126,8 +126,7 @@ Element& operator=(T&& v) {
         return *this;
     } else {
         if (dynamic_cast<Primitive<T_>*>(r_.get()) != nullptr) {
-            *dynamic_cast<Primitive<T_>*>(r_.get()) = 
-                std::forward<T_>(v);
+            *dynamic_cast<Primitive<T_>*>(r_.get()) = std::forward<T>(v);
         } else {
             // Create a primitive and a reference to it
             Primitive<T_>* p = new Primitive<T_>(v);
