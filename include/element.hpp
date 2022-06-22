@@ -94,8 +94,10 @@ explicit Element(T&& v) {
             }
             r_.set(*t,true);
         } else {
+            using T__ = std::remove_const_t<T_>;
+
             // Create a primitive and a reference to it
-            Primitive<T_>* p = new Primitive<T_>(v);
+            Primitive<T__>* p = new Primitive<T__>(v);
             r_.set(*p,true);
         }
     }

@@ -14,11 +14,17 @@
 #include "object.hpp"
 #include "element.hpp"
 #include "container.hpp"
+#include "range.hpp"
 
 namespace cs {
 
 /* Type definitions */
 using string = std::string;
+
+template <typename T>
+concept derived_from_Iterable = requires(T& x) {
+    []<typename U>(Iterable<U>&){}(x);
+};
 
 class List : public Container, public virtual Object {
 
@@ -27,11 +33,15 @@ friend class ListFriend;
 public:
 
 /* Constructors */
-List() {}
+List() {
+#ifdef DEBUG_LIST
+    std::cout << "List() : this = " << (void*) this << std::endl;
+#endif
+}
 
 template <typename... Types>
 requires ((std::tuple_size_v<std::tuple<Types...>> != 1) ||
-         (!std::is_base_of_v<Container,std::remove_cvref_t<std::tuple_element_t<0,std::tuple<Types...>>>>))
+         (!derived_from_Iterable<std::remove_cvref_t<std::tuple_element_t<0,std::tuple<Types...>>>>))
 explicit List(Types&&... args) {
 #ifdef DEBUG_LIST
     std::cout << "List(Types&&... args) : this = " << (void*) this << std::endl;
@@ -39,7 +49,7 @@ explicit List(Types&&... args) {
     (elems_.emplace_back(std::forward<Types>(args)),...);
 }
 
-List(const List& l) {
+explicit List(const List& l) {
 #ifdef DEBUG_LIST
     std::cout << "List(const List& l) : this = " << (void*) this << std::endl;
 #endif
@@ -53,6 +63,13 @@ explicit List(const C& c) {
     std::cout << "List(const C& c) : this = " << (void*) this << std::endl;
 #endif
     for (const Element& e : c) elems_.emplace_back(e,true);
+}
+
+explicit List(const Range& r) {
+#ifdef DEBUG_LIST
+    std::cout << "List(const Range& r) : this = " << (void*) this << std::endl;
+#endif
+    for (const uint& v : r) elems_.emplace_back(v);
 }
 
 /* Destructor */

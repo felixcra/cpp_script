@@ -9,6 +9,7 @@ set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG_ELEMENT")
 #set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG_DICT")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG_LIST")
+#set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG_ITERABLE")
 
 include(CTest)
 
@@ -24,10 +25,7 @@ function(add_tests)
             PRIVATE cs
             PRIVATE Catch2::Catch2WithMain
         )
-        add_test(
-            NAME ${ARGV${i}}
-            COMMAND ${ARGV${i}}
-        )
+        add_test(${ARGV${i}} ${ARGV${i}})
     endforeach()
 endfunction()
 
@@ -43,4 +41,5 @@ add_tests(
     test_dict
     test_string
     test_tuple
+    test_range
 )

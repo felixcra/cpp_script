@@ -7,122 +7,70 @@
 #include <iterator>
 #include <concepts>
 #include <vector>
+#include <memory>
+
+#ifdef DEBUG_CONTAINER
+#include <iostream>
+#endif
 
 #include "element.hpp"
+#include "iterable.hpp"
 
 namespace cs {
 
 /* Type definitions */
 template <typename T>
-using vector = std::vector<T>;
+using vector     = std::vector<T>;
+template <typename T>
+using unique_ptr = std::unique_ptr<T>;
 
-class Container {
+class Container : public Iterable<Element> {
 public:
+
+Container() : c_ptr_(new uint) {}
+
+protected:
 
 vector<Element> elems_;
 
-friend class Iterator;
-
-class Iterator {
-public:
-
-using value_type        = Element;
-using difference_type   = int;
-using reference         = Element&;
-using pointer           = Element*;
-using iterator_category = std::input_iterator_tag;
-
-Iterator(Container* c, const int& idx) :
-    c_(c),
-    idx_(idx)
-{}
-
-bool operator==(const Iterator& i) const {
-    return idx_ == i.idx_;
+void iter_init() const override {
+#ifdef DEBUG_LIST
+    std::cout << "Container::iter_init()" << std::endl;
+#endif
+    *c_ptr_ = 0;
 }
 
-bool operator!=(const Iterator& i) const {
-    return !(*this == i);
+void iter_inc() const override {
+#ifdef DEBUG_LIST
+    std::cout << "Container::iter_inc() *c_ptr_" << *c_ptr_ << " -> " << *c_ptr_+1 << std::endl;
+#endif
+    ++*c_ptr_;
 }
 
-Iterator& operator++() {
-    ++idx_;
-    return *this;
+uint iter_max() const override {
+#ifdef DEBUG_LIST
+    std::cout << "Container::iter_max()" << std::endl;
+#endif
+    return elems_.size();
 }
 
-reference operator*() {
-    return c_->elems_.at(idx_);
+Element& iter_get() override {
+#ifdef DEBUG_LIST
+    std::cout << "Container::iter_get()" << std::endl;
+#endif
+    return elems_.at(*c_ptr_);
 }
 
-protected:
-
-Container* c_;
-int idx_;
-
-};
-
-class ConstIterator {
-public:
-
-using value_type        = const Element;
-using difference_type   = int;
-using reference         = const Element&;
-using pointer           = const Element*;
-using iterator_category = std::input_iterator_tag;
-
-ConstIterator(const Container* c, const int& idx) : c_(c), idx_(idx) {}
-
-bool operator==(const ConstIterator& i) const {
-    return idx_ == i.idx_;
+const Element& c_iter_get() const override {
+#ifdef DEBUG_LIST
+    std::cout << "Container::c_iter_get()" << std::endl;
+#endif
+    return elems_.at(*c_ptr_);
 }
 
-bool operator!=(const ConstIterator& i) const {
-    return !(*this == i);
-}
+private:
 
-ConstIterator& operator++() {
-    ++idx_;
-    return *this;
-}
-
-reference operator*() {
-    return c_->elems_.at(idx_);
-}
-
-protected:
-
-const Container* c_;
-int idx_;
-
-};
-
-Iterator begin() {
-    return Iterator(this,0);
-}
-
-Iterator end() {
-    return Iterator(this,elems_.size());
-}
-
-ConstIterator begin() const {
-    return ConstIterator(this,0);
-}
-
-ConstIterator end() const {
-    return ConstIterator(this,elems_.size());
-}
-
-static_assert(std::is_copy_constructible_v<Iterator>);
-static_assert(std::is_copy_assignable_v<Iterator>);
-static_assert(std::is_destructible_v<Iterator>);
-static_assert(std::is_swappable_v<Iterator>);
-static_assert(std::equality_comparable<Iterator>);
-
-static_assert(std::is_copy_constructible_v<ConstIterator>);
-static_assert(std::is_copy_assignable_v<ConstIterator>);
-static_assert(std::is_destructible_v<ConstIterator>);
-static_assert(std::is_swappable_v<ConstIterator>);
-static_assert(std::equality_comparable<ConstIterator>);
+const unique_ptr<uint> c_ptr_;
 
 };
 

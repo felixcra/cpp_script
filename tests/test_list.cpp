@@ -115,3 +115,7 @@ TEST_CASE("test_from_list_2") {
     REQUIRE(l1.to_string() == "[1,5,3]");
     REQUIRE(l2.to_string() == "[1,2,3]");
 }
+
+TEST_CASE("test_from_range") {
+    REQUIRE(List(Range(2,5)).to_string() == "[2,3,4]");
+}
