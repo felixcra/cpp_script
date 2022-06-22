@@ -33,7 +33,7 @@ template <typename... Types>
 constexpr size_t num_args = std::tuple_size_v<std::tuple<Types...>>;
 
 template <size_t n, typename... Types>
-using get_arg = std::remove_cvref_t<std::tuple_element_t<std::min(n,num_args<Types...>-1),std::tuple<Types...>>>;
+using get_arg = std::remove_cvref_t<std::tuple_element_t<(n > num_args<Types...> ? num_args<Types...> : n),std::tuple<Types...,void>>>;
 
 template <typename... Types>
 constexpr bool is_gen_arg_pair = has_num_args<2,Types...> &&
