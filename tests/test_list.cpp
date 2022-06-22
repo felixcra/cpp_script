@@ -118,4 +118,5 @@ TEST_CASE("test_from_list_2") {
 
 TEST_CASE("test_from_range") {
     REQUIRE(List(Range(2,5)).to_string() == "[2,3,4]");
+    REQUIRE(List(Range(2,5),[](auto i){return 1;}).to_string() == "[1,1,1]");
 }

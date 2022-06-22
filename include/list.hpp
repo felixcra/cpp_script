@@ -26,6 +26,20 @@ concept derived_from_Iterable = requires(T& x) {
     []<typename U>(Iterable<U>&){}(x);
 };
 
+template <size_t n, typename... Types>
+constexpr bool has_num_args = std::tuple_size_v<std::tuple<Types...>> == n;
+
+template <typename... Types>
+constexpr size_t num_args = std::tuple_size_v<std::tuple<Types...>>;
+
+template <size_t n, typename... Types>
+using get_arg = std::remove_cvref_t<std::tuple_element_t<std::min(n,num_args<Types...>-1),std::tuple<Types...>>>;
+
+template <typename... Types>
+constexpr bool is_gen_arg_pair = has_num_args<2,Types...> &&
+                                 derived_from_Iterable<get_arg<0,Types...>> &&
+                                 std::is_invocable_v<get_arg<1,Types...>,uint>;
+
 class List : public Container, public virtual Object {
 
 friend class ListFriend;
@@ -40,8 +54,8 @@ List() {
 }
 
 template <typename... Types>
-requires ((std::tuple_size_v<std::tuple<Types...>> != 1) ||
-         (!derived_from_Iterable<std::remove_cvref_t<std::tuple_element_t<0,std::tuple<Types...>>>>))
+requires (!(derived_from_Iterable<get_arg<0,Types...>> && has_num_args<1,Types...>) && 
+          !is_gen_arg_pair<Types...>)
 explicit List(Types&&... args) {
 #ifdef DEBUG_LIST
     std::cout << "List(Types&&... args) : this = " << (void*) this << std::endl;
@@ -70,6 +84,12 @@ explicit List(const Range& r) {
     std::cout << "List(const Range& r) : this = " << (void*) this << std::endl;
 #endif
     for (const uint& v : r) elems_.emplace_back(v);
+}
+
+template <typename I, typename G>
+requires is_gen_arg_pair<I,G>
+explicit List(const I& i, const G& g) {
+    for (const auto& v : i) elems_.emplace_back(g(v));
 }
 
 /* Destructor */
