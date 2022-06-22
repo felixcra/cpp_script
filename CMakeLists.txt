@@ -11,6 +11,8 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG_ELEMENT")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG_LIST")
 #set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG_ITERABLE")
 
+set(BUILD_TEST FALSE)
+
 include(CTest)
 
 find_package(Catch2 3 REQUIRED)
@@ -34,12 +36,14 @@ target_include_directories(cs
     INTERFACE include
 )
 
-add_tests(
-    test_object_and_element
-    test_primitive
-    test_list
-    test_dict
-    test_string
-    test_tuple
-    test_range
-)
+if (BUILD_TESTS)
+    add_tests(
+        test_object_and_element
+        test_primitive
+        test_list
+        test_dict
+        test_string
+        test_tuple
+        test_range
+    )
+endif()
