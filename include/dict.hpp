@@ -80,18 +80,26 @@ const string s_;
 
 };
 
-public:
-
-/* Constructors */
-Dict(const size_t max_size=MIN_DICT_SIZE) : 
+/* Private constructor */
+Dict(const size_t max_size) : 
     max_size_(max_size),
     num_elems_(0),
     data_(new unordered_map<tuple<size_t,Element,Element>>())
 {}
 
-Dict(const Dict& d) {
-    // TODO: Implement this
-    throw exception();
+public:
+
+/* Public constructors */
+Dict() : Dict(MIN_DICT_SIZE) {}
+
+Dict(const Dict& d) : Dict(MIN_DICT_SIZE) {
+#ifdef DEBUG_DICT
+    std::cout << "Dict(const Dict& d) : this = " << (void*) this << std::endl;
+#endif
+    for (const auto& e : *d.data_) {
+        const auto& v = std::get<1>(e);
+        (*this)[std::get<1>(v)] = std::get<2>(v);
+    }
 }
 
 /* Destructor */
@@ -121,6 +129,37 @@ Element& operator[](const string& s) {
     return (*this)[String(s)];
 }
 
+const Element& operator[](const char* s) const {
+    return (*this)[String(s)];
+}
+
+private:
+
+class SearchIndexGenerator {
+    public:
+        SearchIndexGenerator(const size_t hash, const size_t mask) :
+            j(hash & mask),
+            perturb(hash),
+            mask(mask) {}
+
+        size_t operator()() {
+            const size_t ret = j;
+
+            j = (j << 2) + j + 1 + perturb; // (j << 2) + j == 5*j
+
+            perturb >>= PERTURB_SHIFT;
+
+            return ret & mask;
+        }
+
+    private:
+        size_t j;
+        size_t perturb;
+        size_t mask;
+};
+
+public:
+
 template <typename T>
 requires (std::is_base_of_v<Object,std::remove_cvref_t<T>> || std::is_same_v<std::remove_cvref_t<T>,Element>)
 Element& operator[](T&& k) {
@@ -128,28 +167,6 @@ Element& operator[](T&& k) {
     const size_t h = k.hash();
 
     // Create a search index generator
-    class SearchIndexGenerator {
-        public:
-            SearchIndexGenerator(const size_t hash, const size_t mask) :
-                j(hash & mask),
-                perturb(hash),
-                mask(mask) {}
-
-            size_t operator()() {
-                const size_t ret = j;
-
-                j = (j << 2) + j + 1 + perturb; // (j << 2) + j == 5*j
-
-                perturb >>= PERTURB_SHIFT;
-
-                return ret & mask;
-            }
-
-        private:
-            size_t j;
-            size_t perturb;
-            size_t mask;
-    };
     SearchIndexGenerator g(h,max_size_-1u);
     size_t idx = g();
 
@@ -196,6 +213,43 @@ Element& operator[](T&& k) {
             }
 
             break;
+        }
+    }
+
+    // Return a reference to the entry
+    return std::get<2>(data_->at(idx));
+}
+
+template <typename T>
+requires (std::is_base_of_v<Object,std::remove_cvref_t<T>> || std::is_same_v<std::remove_cvref_t<T>,Element>)
+const Element& operator[](T&& k) const {
+    // Get the hash of the key
+    const size_t h = k.hash();
+
+    // Create a search index generator
+    SearchIndexGenerator g(h,max_size_-1u);
+    size_t idx = g();
+
+    // Try to get the element
+    while (true) {
+        if (data_->contains(idx)) {
+            // Check if the hashes match
+            if (std::get<1>(data_->at(idx)) == k) {
+                // Check if the keys match
+                if (std::get<1>(data_->at(idx)) == k) {
+                    // Found the correct element
+                    break;
+                } else {
+                    // Probe a new index
+                    idx = g();
+                }
+            } else {
+                // Probe a new index
+                idx = g();
+            }
+        } else {
+            std::cout << "3" << std::endl;
+            throw KeyError("KeyError: '"+k.to_string()+"'");
         }
     }
 

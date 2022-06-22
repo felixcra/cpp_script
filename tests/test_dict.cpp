@@ -17,6 +17,7 @@ TEST_CASE("test_simple_access_2") {
     Dict d;
     d["1"] = 1;
     REQUIRE(d["1"] == 1);
+    REQUIRE(static_cast<const Dict>(d)["1"] == 1);
     std::string s = "1";
     REQUIRE(d[s] == 1);
 }
