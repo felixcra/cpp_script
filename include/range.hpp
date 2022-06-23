@@ -12,43 +12,53 @@
 
 #include "object.hpp"
 #include "iterable.hpp"
+#include "primitives.hpp"
 
 namespace cs {
 
 /* Type definitions */
-using uint       = unsigned int;
 using string     = std::string;
 template <typename T>
 using unique_ptr = std::unique_ptr<T>;
 
-class Range : public Iterable<uint>, public virtual Object {
+class Range : public Iterable<int>, public virtual Object {
 public:
 
 /* Constructors */
-explicit Range(const uint u) :
+explicit Range(const int u) :
     l_(0),
     u_(u),
-    v_ptr_(new uint)
+    v_ptr_(new int)
 {
 #ifdef DEBUG_RANGE
-    std::cout << "Range(const uint u) : this = " << (void*) this << std::endl;
+    std::cout << "Range(const int u) : this = " << (void*) this << std::endl;
 #endif
 }
 
-explicit Range(const uint l, const uint u) :
-    l_(l),
-    u_(u),
-    v_ptr_(new uint)
+explicit Range(const Int& i) :
+    l_(0),
+    u_(i.get()),
+    v_ptr_(new int)
 {
 #ifdef DEBUG_RANGE
-    std::cout << "Range(const uint l, const uint u) : this = " << (void*) this << std::endl;
+    std::cout << "Range(const Int& i) : this = " << (void*) this << std::endl;
+#endif
+}
+
+explicit Range(const int l, const int u) :
+    l_(l),
+    u_(u),
+    v_ptr_(new int)
+{
+#ifdef DEBUG_RANGE
+    std::cout << "Range(const int l, const int u) : this = " << (void*) this << std::endl;
 #endif
 }
 
 explicit Range(const Range& r) :
     l_(r.l_),
     u_(r.u_),
-    v_ptr_(new uint)
+    v_ptr_(new int)
 {
 #ifdef DEBUG_RANGE
     std::cout << "Range(const Range& r) : this = " << (void*) this << std::endl;
@@ -88,22 +98,22 @@ void iter_inc() const override {
 }
 
 uint iter_max() const override {
-    return u_ - l_;
+    return std::max(u_ - l_,0);
 }
 
-uint& iter_get() override {
+int& iter_get() override {
     return *v_ptr_;
 }
 
-const uint& c_iter_get() const override {
+const int& c_iter_get() const override {
     return *v_ptr_;
 }
 
 private:
 
-const uint             l_;
-const uint             u_;
-const unique_ptr<uint> v_ptr_;
+const int             l_;
+const int             u_;
+const unique_ptr<int> v_ptr_;
 
 };
 

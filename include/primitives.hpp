@@ -59,7 +59,7 @@ explicit Float(const double& v) : v_(v) {
 #endif
 }
 
-explicit Float(const Float& f) : v_(f.v_) {
+Float(const Float& f) : v_(f.v_) {
 #ifdef DEBUG_PRIMITIVE
     std::cout << "Float(const Float& f) : this = " << (void*) this << " v = " << f.v_ << std::endl;
 #endif
@@ -140,7 +140,7 @@ explicit Int(const int64_t& v) : v_(v) {
 #endif
 }
 
-explicit Int(const Int& i) : v_(i.v_) {
+Int(const Int& i) : v_(i.v_) {
 #ifdef DEBUG_PRIMITIVE
     std::cout << "Int(const Int& i) : this = " << (void*) this << " v = " << i.v_ << std::endl;
 #endif

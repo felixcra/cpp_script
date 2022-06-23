@@ -12,6 +12,18 @@ TEST_CASE("test_range_1") {
 
 TEST_CASE("test_range_2") {
     std::string s = "";
-    for (unsigned int i : Range(2,5)) s += std::to_string(i);
+    for (int i : Range(2,5)) s += std::to_string(i);
     REQUIRE(s == "234");
+}
+
+TEST_CASE("test_range_3") {
+    std::string s = "";
+    for (int i : Range(-5)) s += std::to_string(i);
+    REQUIRE(s == "");
+}
+
+TEST_CASE("test_range_4") {
+    std::string s = "";
+    for (int i : Range(Int(4))) s += std::to_string(i);
+    REQUIRE(s == "0123");
 }
