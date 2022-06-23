@@ -6,6 +6,10 @@
 #include <string>
 #include <memory>
 
+#ifdef DEBUG_RANGE
+#include <iostream>
+#endif
+
 #include "object.hpp"
 #include "iterable.hpp"
 
@@ -25,23 +29,41 @@ explicit Range(const uint u) :
     l_(0),
     u_(u),
     v_ptr_(new uint)
-{}
+{
+#ifdef DEBUG_RANGE
+    std::cout << "Range(const uint u) : this = " << (void*) this << std::endl;
+#endif
+}
 
 explicit Range(const uint l, const uint u) :
     l_(l),
     u_(u),
     v_ptr_(new uint)
-{}
+{
+#ifdef DEBUG_RANGE
+    std::cout << "Range(const uint l, const uint u) : this = " << (void*) this << std::endl;
+#endif
+}
 
 explicit Range(const Range& r) :
     l_(r.l_),
     u_(r.u_),
     v_ptr_(new uint)
-{}
+{
+#ifdef DEBUG_RANGE
+    std::cout << "Range(const Range& r) : this = " << (void*) this << std::endl;
+#endif
+}
 
 /* Destructor */
 ~Range() override {
+#ifdef DEBUG_RANGE
+    std::cout << "Entering ~Range() : this = " << (void*) this << std::endl;
+#endif
     OBJECT_DESCTRUCT(this);
+#ifdef DEBUG_RANGE
+    std::cout << "Leaving ~Range() : this = " << (void*) this << std::endl;
+#endif
 }
 
 /* Miscellaneous */
