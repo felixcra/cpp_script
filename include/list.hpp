@@ -94,7 +94,13 @@ explicit List(const I& i, const G& g) {
 
 /* Destructor */
 ~List() override {
+#ifdef DEBUG_LIST
+    std::cout << "Entering ~List() : this = " << (void*) this << std::endl;
+#endif
     OBJECT_DESCTRUCT(this);
+#ifdef DEBUG_LIST
+    std::cout << "Leaving ~List() : this = " << (void*) this << std::endl;
+#endif
 }
 
 /* Assignment */
