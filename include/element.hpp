@@ -16,7 +16,7 @@
 #endif
 
 #include "object.hpp"
-#include "primitive.hpp"
+#include "primitives.hpp"
 #include "string.hpp"
 
 namespace cs {
@@ -52,8 +52,8 @@ Element(const Element& e, const bool clone_primitives = false) {
 #ifdef DEBUG_ELEMENT
     std::cout << "Element(const Element& e) : this = " << (void*) this << " e.this = " << (void*) &e << " r_.o_ = " << (void*) r_.o_ << std::endl;
 #endif
-    if (clone_primitives && dynamic_cast<const PrimitiveBase*>(e.r_.c_get()) != nullptr) {
-        PrimitiveBase* p = dynamic_cast<const PrimitiveBase*>(e.r_.c_get())->clone();
+    if (clone_primitives && dynamic_cast<const Primitive*>(e.r_.c_get()) != nullptr) {
+        Primitive* p = dynamic_cast<const Primitive*>(e.r_.c_get())->clone();
         r_.set(*p,true);
     } else {
         r_ = e.r_;
@@ -97,8 +97,13 @@ explicit Element(T&& v) {
             using T__ = std::remove_const_t<T_>;
 
             // Create a primitive and a reference to it
-            Primitive<T__>* p = new Primitive<T__>(v);
-            r_.set(*p,true);
+            if constexpr (std::is_integral_v<T__>) {
+                Int* i = new Int(v);
+                r_.set(*i,true);
+            } else {
+                Float* f = new Float(v);
+                r_.set(*f,true);
+            }
         }
     }
 #ifdef DEBUG_ELEMENT
@@ -125,13 +130,24 @@ Element& operator=(T&& v) {
 
         return *this;
     } else {
-        if (dynamic_cast<Primitive<T_>*>(r_.get()) != nullptr) {
-            *dynamic_cast<Primitive<T_>*>(r_.get()) = std::forward<T>(v);
+        if constexpr (std::is_integral_v<T_>) {
+            if (dynamic_cast<Int*>(r_.get()) != nullptr) {
+                *dynamic_cast<Int*>(r_.get()) = v;
+            } else {
+                // Create a primitive and a reference to it
+                Int* i = new Int(v);
+                r_.set(*i,true);
+            }
         } else {
-            // Create a primitive and a reference to it
-            Primitive<T_>* p = new Primitive<T_>(v);
-            r_.set(*p,true);
+            if (dynamic_cast<Float*>(r_.get()) != nullptr) {
+                *dynamic_cast<Float*>(r_.get()) = v;
+            } else {
+                // Create a primitive and a reference to it
+                Float* f = new Float(v);
+                r_.set(*f,true);
+            }
         }
+
         return *this;
     }
 }
@@ -175,8 +191,13 @@ bool operator==(T&& v) const {
 
     using T_ = std::remove_cvref_t<T>;
 
-    const Primitive<T_> p(v);
-    return r_.o_->is_equal(&p);
+    if constexpr (std::is_integral_v<T_>) {
+        const Int i(v);
+        return r_.o_->is_equal(&i);
+    } else {
+        const Float f(v);
+        return r_.o_->is_equal(&f);
+    }
 }
 
 template <typename T>

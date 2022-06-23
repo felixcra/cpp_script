@@ -38,18 +38,19 @@ template <typename T>
 using unique_ptr    = std::unique_ptr<T>;
 
 class Dict : public virtual Object {
+private:
 
 class PlaceHolder : public virtual Object {
 public:
 
 /* Constructors */
-PlaceHolder() {
+PlaceHolder(const string& key_string) : key_string_(key_string) {
 #ifdef DEBUG_DICT
     std::cout << "PlaceHolder() : this = " << (void*) this << std::endl;
 #endif
 }
 
-explicit PlaceHolder(const PlaceHolder& p) {
+explicit PlaceHolder(const PlaceHolder& p) :key_string_(p.key_string_) {
 #ifdef DEBUG_DICT
     std::cout << "PlaceHolder(const PlaceHolder& p) : this = " << (void*) this << std::endl;
 #endif
@@ -63,7 +64,25 @@ explicit PlaceHolder(const PlaceHolder& p) {
     OBJECT_DESCTRUCT(this);
 }
 
+/* Miscellanous */
+string to_string() const override {
+    throw KeyError("KeyError: '"+key_string_+"'");
+}
+
+private:
+
+const string key_string_;
+
 };
+
+/* Private constructor */
+Dict(const size_t max_size) : 
+    max_size_(max_size),
+    num_elems_(0),
+    data_(new unordered_map<tuple<size_t,Element,Element>>())
+{}
+
+public:
 
 class KeyError : public exception {
 public:
@@ -79,15 +98,6 @@ private:
 const string s_;
 
 };
-
-/* Private constructor */
-Dict(const size_t max_size) : 
-    max_size_(max_size),
-    num_elems_(0),
-    data_(new unordered_map<tuple<size_t,Element,Element>>())
-{}
-
-public:
 
 /* Public constructors */
 Dict() : Dict(MIN_DICT_SIZE) {}
@@ -114,7 +124,11 @@ Dict(const Dict& d) : Dict(MIN_DICT_SIZE) {
 template <typename T>
 requires std::is_arithmetic_v<std::remove_cvref_t<T>>
 Element& operator[](T&& v) {
-    return (*this)[Primitive(std::forward<T>(v))];
+    if constexpr (std::is_integral_v<std::remove_cvref_t<T>>) {
+        return (*this)[Int(std::forward<T>(v))];
+    } else {
+        return (*this)[Float(std::forward<T>(v))];
+    }
 }
 
 Element& operator[](const char* s) {
@@ -158,17 +172,17 @@ class SearchIndexGenerator {
         size_t mask;
 };
 
-public:
+private:
 
 template <typename T>
 requires (std::is_base_of_v<Object,std::remove_cvref_t<T>> || std::is_same_v<std::remove_cvref_t<T>,Element>)
-Element& operator[](T&& k) {
+Element& index_get(T&& k, size_t& idx) {
     // Get the hash of the key
     const size_t h = k.hash();
 
     // Create a search index generator
     SearchIndexGenerator g(h,max_size_-1u);
-    size_t idx = g();
+    idx = g();
 
     // Try to get the element
     while (true) {
@@ -190,9 +204,10 @@ Element& operator[](T&& k) {
         } else {
             // Add a new element
             if constexpr (std::is_same_v<std::remove_cvref_t<T>,Element>) {
-                data_->emplace(idx,std::forward_as_tuple(h,k,PlaceHolder()));
+                data_->emplace(idx,std::forward_as_tuple(h,k,PlaceHolder(k.to_string())));
             } else {
-                data_->emplace(idx,std::forward_as_tuple(h,Element(std::forward<T>(k)),PlaceHolder()));
+                data_->emplace(idx,std::forward_as_tuple(h,Element(std::forward<T>(k)),
+                               PlaceHolder(k.to_string())));
             }
 
             // Increase the element count
@@ -203,12 +218,19 @@ Element& operator[](T&& k) {
                 // Increase the maximum size
                 max_size_ *= 2;
 
+                // Create a new larger dictionary
                 Dict d(max_size_);
+                const size_t insert_idx = idx;
                 for (const auto& e : *data_) {
                     const auto& v = std::get<1>(e);
-                    d[std::get<1>(v)] = std::get<2>(v);
+                    if (std::get<0>(e) == insert_idx) {
+                        d.index_get(std::get<1>(v),idx) = std::get<2>(v);
+                    } else {
+                        d[std::get<1>(v)] = std::get<2>(v);
+                    }
                 }
 
+                // Move the data to the current dictionary
                 data_ = std::move(d.data_);
             }
 
@@ -218,6 +240,15 @@ Element& operator[](T&& k) {
 
     // Return a reference to the entry
     return std::get<2>(data_->at(idx));
+}
+
+public:
+
+template <typename T>
+requires (std::is_base_of_v<Object,std::remove_cvref_t<T>> || std::is_same_v<std::remove_cvref_t<T>,Element>)
+Element& operator[](T&& k) {
+    size_t idx;
+    return index_get(std::forward<T>(k),idx);
 }
 
 template <typename T>
@@ -248,7 +279,6 @@ const Element& operator[](T&& k) const {
                 idx = g();
             }
         } else {
-            std::cout << "3" << std::endl;
             throw KeyError("KeyError: '"+k.to_string()+"'");
         }
     }

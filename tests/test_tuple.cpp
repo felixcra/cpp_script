@@ -1,7 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "tuple.hpp"
-#include "primitive.hpp"
+#include "primitives.hpp"
 
 using namespace cs;
 
@@ -9,7 +9,7 @@ TEST_CASE("test_tuple_1") {
     Tuple t1(1,2,3);
     Tuple t2(1,2,3);
     Tuple t3(0,2,3);
-    Tuple t4(Primitive(1),2,3);
+    Tuple t4(Int(1),2,3);
     REQUIRE(t1 == t2);
     REQUIRE(t1 != t3);
     REQUIRE(t1 == t4);

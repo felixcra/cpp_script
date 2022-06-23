@@ -61,6 +61,10 @@ bool is_equal(const Object* o) const override {
            dynamic_cast<const String*>(o)->s_ == s_;
 }
 
+string to_string() const override {
+    return s_;
+}
+
 private:
 
 string s_;

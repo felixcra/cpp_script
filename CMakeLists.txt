@@ -39,7 +39,7 @@ target_include_directories(cs
 if (BUILD_TESTS)
     add_tests(
         test_object_and_element
-        test_primitive
+        test_primitives
         test_list
         test_dict
         test_string

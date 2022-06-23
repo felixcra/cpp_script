@@ -1,16 +1,16 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "dict.hpp"
-#include "primitive.hpp"
+#include "primitives.hpp"
 
 using namespace cs;
 
 TEST_CASE("test_simple_access_1") {
     Dict d;
-    d[Primitive(2)] = Primitive(3);
-    REQUIRE(d[Primitive(2)] == 3);
+    d[Int(2)] = Int(3);
+    REQUIRE(d[Int(2)] == 3);
     REQUIRE(d[2] == 3);
-    REQUIRE(d[2] == Primitive(3));
+    REQUIRE(d[2] == Int(3));
 }
 
 TEST_CASE("test_simple_access_2") {
@@ -20,6 +20,24 @@ TEST_CASE("test_simple_access_2") {
     REQUIRE(static_cast<const Dict>(d)["1"] == 1);
     std::string s = "1";
     REQUIRE(d[s] == 1);
+}
+
+TEST_CASE("test_simple_access_3") {
+    Dict d;
+    const unsigned int i = 0;
+    d["P"] = i;
+    bool throws_exception = false;
+    try {
+        d["1"].to_string();
+    } catch (const Dict::KeyError& e) {
+        throws_exception = true; 
+    }
+    REQUIRE(throws_exception == true);
+    REQUIRE(d["P"] == 0u);
+    REQUIRE(d["P"] == 0);
+    REQUIRE(static_cast<const Dict>(d)["P"] == 0);
+    std::string s = "P";
+    REQUIRE(d[s] == 0);
 }
 
 class C : public Object {

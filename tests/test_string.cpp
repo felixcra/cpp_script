@@ -10,4 +10,5 @@ TEST_CASE("test_string") {
     String s("hello");
     REQUIRE(s == std::string("hello"));
     REQUIRE(s != std::string("hellox"));
+    REQUIRE(s.to_string() == std::string("hello"));
 }

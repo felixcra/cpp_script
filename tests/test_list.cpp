@@ -1,7 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "list.hpp"
-#include "primitive.hpp"
+#include "primitives.hpp"
 #include "element.hpp"
 #include "tuple.hpp"
 
@@ -41,7 +41,7 @@ TEST_CASE("test_list_1") {
     List l1(1,2,3);
     List l2(1,2,3);
     List l3(0,2,3);
-    List l4(Primitive(1),2,3);
+    List l4(Int(1),2,3);
     REQUIRE(l1 == l2);
     REQUIRE(l1 != l3);
     REQUIRE(l1 == l4);
