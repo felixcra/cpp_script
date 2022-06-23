@@ -204,7 +204,7 @@ bool is_equal(const Object* o) const override {
     }
 }
 
-bool is_less_or_equal(const Object* o) const {
+bool is_less_or_equal(const Object* o) const override {
     if (dynamic_cast<const Int*>(o) != nullptr) {
         return v_ <= dynamic_cast<const Int*>(o)->v_;
     } else if (dynamic_cast<const Float*>(o) != nullptr) {
