@@ -17,5 +17,27 @@ TEST_CASE("test_equality") {
     Float f(2.0);
     REQUIRE(i.get() == 2.0);
     REQUIRE(f.get() == 2);
+    REQUIRE(i == 2.0);
+    REQUIRE(f == 2);
     REQUIRE(f == i);
+}
+
+TEST_CASE("test_int_inequality") {
+    Int i(2);
+    REQUIRE(i <= 2);
+    REQUIRE(i <= Int(2));
+    REQUIRE(i <= Float(2.0));
+    REQUIRE(i <= 3);
+    REQUIRE(i <= Int(3));
+    REQUIRE(i <= Float(3.0));
+}
+
+TEST_CASE("test_float_inequality") {
+    Float f(2.0);
+    REQUIRE(f <= 2);
+    REQUIRE(f <= Int(2));
+    REQUIRE(f <= Float(2.0));
+    REQUIRE(f <= 3);
+    REQUIRE(f <= Int(3));
+    REQUIRE(f <= Float(3.0));
 }

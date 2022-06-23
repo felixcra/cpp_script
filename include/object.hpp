@@ -50,6 +50,10 @@ virtual bool is_equal(const Object* o) const {
     return this == o;
 }
 
+virtual bool is_less_or_equal(const Object* o) const {
+    return this == o;
+}
+
 virtual string to_string() const {
     return "Object()";
 }
@@ -65,6 +69,10 @@ bool operator==(const Object& o) const {
 
 bool operator!=(const Object& o) const {
     return !(*this == o);
+}
+
+bool operator<=(const Object& o) const {
+    return this->is_less_or_equal(&o);
 }
 
 private:

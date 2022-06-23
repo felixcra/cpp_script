@@ -88,8 +88,33 @@ double get() const {
     return v_;
 }
 
+/* Boolean operators */
+template <typename T>
+requires (std::is_arithmetic_v<T> || std::is_base_of_v<Object,T>)
+bool operator==(const T& v) const {
+    return v_ == v;
+}
+
+template <typename T>
+requires (std::is_arithmetic_v<T> || std::is_base_of_v<Object,T>)
+bool operator!=(const T& v) const {
+    return !(*this == v);
+}
+
+template <typename T>
+requires (std::is_arithmetic_v<T> || std::is_base_of_v<Object,T>)
+bool operator<=(const T& v) const {
+    if constexpr (std::is_arithmetic_v<T>) {
+        return v_ <= v;
+    } else {
+        return is_less_or_equal(&v);
+    }
+}
+
 /* Miscellanous */
-bool is_equal(const Object* o) const override; 
+bool is_equal(const Object* o) const override;
+
+bool is_less_or_equal(const Object* o) const override;
 
 string to_string() const override {
     return std::to_string(v_);
@@ -145,12 +170,45 @@ int64_t get() const {
     return v_;
 }
 
+/* Boolean operators */
+template <typename T>
+requires (std::is_arithmetic_v<T> || std::is_base_of_v<Object,T>)
+bool operator==(const T& v) const {
+    return v_ == v;
+}
+
+template <typename T>
+requires (std::is_arithmetic_v<T> || std::is_base_of_v<Object,T>)
+bool operator!=(const T& v) const {
+    return !(*this == v);
+}
+
+template <typename T>
+requires (std::is_arithmetic_v<T> || std::is_base_of_v<Object,T>)
+bool operator<=(const T& v) const {
+    if constexpr (std::is_arithmetic_v<T>) {
+        return v_ <= v;
+    } else {
+        return is_less_or_equal(&v);
+    }
+}
+
 /* Miscellanous */
 bool is_equal(const Object* o) const override {
     if (dynamic_cast<const Int*>(o) != nullptr) {
         return dynamic_cast<const Int*>(o)->v_ == v_;
     } else if (dynamic_cast<const Float*>(o) != nullptr) {
         return dynamic_cast<const Float*>(o)->get() == v_;
+    } else {
+        return false;
+    }
+}
+
+bool is_less_or_equal(const Object* o) const {
+    if (dynamic_cast<const Int*>(o) != nullptr) {
+        return v_ <= dynamic_cast<const Int*>(o)->v_;
+    } else if (dynamic_cast<const Float*>(o) != nullptr) {
+        return v_ <= dynamic_cast<const Float*>(o)->get();
     } else {
         return false;
     }
@@ -175,6 +233,16 @@ bool Float::is_equal(const Object* o) const {
         return dynamic_cast<const Float*>(o)->v_ == v_;
     } else if (dynamic_cast<const Int*>(o) != nullptr) {
         return dynamic_cast<const Int*>(o)->get() == v_;
+    } else {
+        return false;
+    }
+}
+
+bool Float::is_less_or_equal(const Object* o) const {
+    if (dynamic_cast<const Float*>(o) != nullptr) {
+        return v_ <= dynamic_cast<const Float*>(o)->v_;
+    } else if (dynamic_cast<const Int*>(o) != nullptr) {
+        return v_ <= dynamic_cast<const Int*>(o)->get();
     } else {
         return false;
     }
