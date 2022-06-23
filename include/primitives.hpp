@@ -112,9 +112,9 @@ bool operator<=(const T& v) const {
 }
 
 /* Miscellanous */
-bool is_equal(const Object* o) const override;
+inline bool is_equal(const Object* o) const override;
 
-bool is_less_or_equal(const Object* o) const override;
+inline bool is_less_or_equal(const Object* o) const override;
 
 string to_string() const override {
     return std::to_string(v_);

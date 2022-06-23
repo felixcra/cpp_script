@@ -251,7 +251,7 @@ friend std::ostream& operator<<(std::ostream& out, const Element& e);
 
 };
 
-std::ostream& operator<<(std::ostream& out, const Element& e) {
+inline std::ostream& operator<<(std::ostream& out, const Element& e) {
     return out << e.to_string();
 }
 

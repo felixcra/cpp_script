@@ -43,7 +43,7 @@ Object(const Object& o) {
 }
 
 /* Destructor */
-virtual ~Object();
+inline virtual ~Object();
 
 /* Miscellanous */
 virtual bool is_equal(const Object* o) const {

@@ -151,7 +151,7 @@ friend std::ostream& operator<<(std::ostream& out, const List& l);
 
 };
 
-std::ostream& operator<<(std::ostream& out, const List& l) {
+inline std::ostream& operator<<(std::ostream& out, const List& l) {
     return out << l.to_string();
 }
 
@@ -165,7 +165,7 @@ static int length(const List& l) {
 
 };
 
-int len(const List& l) {
+inline int len(const List& l) {
     return ListFriend::length(l);
 }
 
