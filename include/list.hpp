@@ -99,6 +99,7 @@ explicit List(const I& i, const G& g) {
 
 /* Assignment */
 List& operator=(const List& l) {
+    elems_.clear();
     for (const Element& e : l.elems_) elems_.emplace_back(e);
     return *this;
 }
