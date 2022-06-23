@@ -63,7 +63,7 @@ explicit List(Types&&... args) {
     (elems_.emplace_back(std::forward<Types>(args)),...);
 }
 
-explicit List(const List& l) {
+List(const List& l) {
 #ifdef DEBUG_LIST
     std::cout << "List(const List& l) : this = " << (void*) this << std::endl;
 #endif
