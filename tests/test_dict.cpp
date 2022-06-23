@@ -2,6 +2,7 @@
 
 #include "dict.hpp"
 #include "primitives.hpp"
+#include "list.hpp"
 
 using namespace cs;
 
@@ -73,4 +74,21 @@ TEST_CASE("test_resize") {
     for (size_t i = 0; i < 100; ++i) {
         REQUIRE(d[i] == i+2);
     }
+}
+
+TEST_CASE("test_insert_list_1") {
+    List l(1,2,3);
+    Dict d;
+    d["l"] = l;
+}
+
+Dict get_dict() {
+    Dict d;
+    List l(8);
+    d["l"] = l;
+    return d;
+}
+
+TEST_CASE("test_insert_list_2") {
+    const Dict d = get_dict();
 }

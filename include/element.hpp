@@ -119,12 +119,12 @@ Element& operator=(T&& v) {
 
     if constexpr (std::is_base_of_v<Object,T_>) {
         // Create a new object and a reference to it
-        T* t;
-        if constexpr (std::is_same_v<T,Object>) {
-            t = new T();
+        T_* t;
+        if constexpr (std::is_same_v<T_,Object>) {
+            t = new T_();
             t->registry_ = std::move(v.registry_);
         } else {
-            t = new T(std::move(v));
+            t = new T_(std::move(v));
         }
         r_.set(*t,true);
 
