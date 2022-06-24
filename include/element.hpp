@@ -10,6 +10,7 @@
 #include <type_traits>
 #include <ostream>
 #include <functional>
+#include <vector>
 
 #ifdef DEBUG_ELEMENT
 #include <iostream>
@@ -18,14 +19,21 @@
 #include "object.hpp"
 #include "primitives.hpp"
 #include "string.hpp"
+#include "iterable.hpp"
 
 namespace cs {
+
+class Element;
+class Container;// : public Iterable<Element>;
+class List;// : public Container, public virtual Object;
 
 /* Type definitions */
 template <typename T>
 using shared_ptr = std::shared_ptr<T>;
 using exception  = std::exception;
 using string     = std::string;
+template <typename T>
+using vector     = std::vector<T>;
 
 class Element {
 public:
@@ -111,6 +119,15 @@ explicit Element(T&& v) {
 #endif
 }
 
+explicit Element(const char* s) : Element(string(s))
+{}
+
+Element& operator=(const Element& e) {
+    r_ = e.r_;
+
+    return *this;
+}
+
 template <typename T>
 requires (std::is_base_of_v<Object,std::remove_reference_t<T>> || 
           std::is_arithmetic_v<std::remove_reference_t<T>>)
@@ -152,14 +169,9 @@ Element& operator=(T&& v) {
     }
 }
 
-explicit Element(const char* s) : Element(string(s))
-{}
-
-Element& operator=(const Element& e) {
-    r_ = e.r_;
-
-    return *this;
-}
+template <typename T>
+requires std::is_arithmetic_v<T>
+Element& operator=(const vector<T>& v);
 
 /* Boolean operators */
 bool operator==(const Element& e) const {

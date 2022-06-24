@@ -3,10 +3,9 @@
 #include <string>
 #include <string.h>
 #include <type_traits>
+#include <vector>
 
-#include "object.hpp"
-#include "list.hpp"
-#include "element.hpp"
+#include "cs.hpp"
 
 using namespace cs;
 
@@ -99,4 +98,12 @@ TEST_CASE("test_element") {
     e = a;
     const int b = 4;
     e = b;
+}
+
+TEST_CASE("from_vector") {
+    std::vector<uint> v;
+    for (size_t i = 0; i < 10; ++i) v.push_back(i);
+    Dict d;
+    d["v"] = v;
+    REQUIRE(d["v"] == List(Range(10)));
 }
