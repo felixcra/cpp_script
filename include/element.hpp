@@ -235,6 +235,15 @@ bool operator!=(T&& v) const {
 /* Miscellaneous */
 template <typename T>
 requires std::is_base_of_v<Object,T>
+T& as() {
+    if (dynamic_cast<T*>(r_.get()) == nullptr) {
+        throw InvalidConversionException("Invalid conversion of Element requested.");
+    }
+    return *dynamic_cast<T*>(r_.get());
+}
+
+template <typename T>
+requires std::is_base_of_v<Object,T>
 const T& as() const {
     if (dynamic_cast<const T*>(r_.c_get()) == nullptr) {
         throw InvalidConversionException("Invalid conversion of Element requested.");
