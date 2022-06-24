@@ -118,11 +118,19 @@ void append(T&& e) {
 
 /* Accessor methods */
 const Element& operator[](const int& i) const {
-    return elems_.at(i);
+    if (i >= 0) {
+        return elems_.at(i);
+    } else {
+        return elems_.at(elems_.size()+i);
+    }
 }
 
 Element& operator[](const int& i) {
-    return elems_.at(i);
+    if (i >= 0) {
+        return elems_.at(i);
+    } else {
+        return elems_.at(elems_.size()+i);
+    }
 }
 
 /* Miscellaneous */

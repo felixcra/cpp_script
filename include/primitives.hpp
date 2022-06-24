@@ -23,7 +23,11 @@ class Primitive : public virtual Object {
 public:
 
 /* Constructors */
-Primitive() {}
+Primitive() {
+#ifdef DEBUG_PRIMITIVE
+    std::cout << "Primitive() : this = " << (void*) this << std::endl;
+#endif
+}
 
 explicit Primitive(const Primitive& p) {
 #ifdef DEBUG_PRIMITIVE

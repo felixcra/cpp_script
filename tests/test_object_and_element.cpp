@@ -100,10 +100,27 @@ TEST_CASE("test_element") {
     e = b;
 }
 
-TEST_CASE("from_vector") {
+TEST_CASE("from_vector_1") {
     std::vector<uint> v;
     for (size_t i = 0; i < 10; ++i) v.push_back(i);
     Dict d;
     d["v"] = v;
     REQUIRE(d["v"] == List(Range(10)));
+}
+
+TEST_CASE("from_vector_2") {
+    std::vector<std::vector<uint>> v;
+    for (size_t i = 0; i < 10; ++i) {
+        v.push_back(std::vector<uint>());
+        for (size_t j = 0; j < 10; ++j) {
+            v.back().push_back(j+10*i);
+        }
+    }
+    Dict d;
+    d["v"] = v;
+    REQUIRE(d["v"] == List(Range(10),[](auto i){
+        return List(Range(10),[&](auto j){
+            return j+10*i;
+        });
+    }));
 }

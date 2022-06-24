@@ -23,10 +23,6 @@
 
 namespace cs {
 
-class Element;
-class Container;// : public Iterable<Element>;
-class List;// : public Container, public virtual Object;
-
 /* Type definitions */
 template <typename T>
 using shared_ptr = std::shared_ptr<T>;
@@ -34,6 +30,21 @@ using exception  = std::exception;
 using string     = std::string;
 template <typename T>
 using vector     = std::vector<T>;
+
+template <typename T>
+struct is_nested_vector_or_arithmetic_trait : std::false_type { };
+
+template <typename T>
+concept is_arithmetic = std::is_arithmetic_v<T>;
+
+template <is_arithmetic T>
+struct is_nested_vector_or_arithmetic_trait<T> : std::true_type { };
+
+template <typename T>
+struct is_nested_vector_or_arithmetic_trait<vector<T>> : is_nested_vector_or_arithmetic_trait<T> { };
+
+template <typename T>
+concept is_nested_vector_or_arithmetic = is_nested_vector_or_arithmetic_trait<T>::value;
 
 class Element {
 public:
@@ -169,8 +180,7 @@ Element& operator=(T&& v) {
     }
 }
 
-template <typename T>
-requires std::is_arithmetic_v<T>
+template <is_nested_vector_or_arithmetic T>
 Element& operator=(const vector<T>& v);
 
 /* Boolean operators */
