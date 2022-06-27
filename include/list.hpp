@@ -35,10 +35,15 @@ constexpr size_t num_args = std::tuple_size_v<std::tuple<Types...>>;
 template <size_t n, typename... Types>
 using get_arg = std::remove_cvref_t<std::tuple_element_t<(n > num_args<Types...> ? num_args<Types...> : n),std::tuple<Types...,void>>>;
 
+template <typename I, typename G>
+concept is_callable = requires(I& i, G& g) {
+    g(*i.begin());
+};
+
 template <typename... Types>
 constexpr bool is_gen_arg_pair = has_num_args<2,Types...> &&
                                  derived_from_Iterable<get_arg<0,Types...>> &&
-                                 std::is_invocable_v<get_arg<1,Types...>,uint>;
+                                 is_callable<get_arg<0,Types...>,get_arg<1,Types...>>;
 
 class List : public Container, public virtual Object {
 
