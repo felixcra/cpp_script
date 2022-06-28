@@ -252,4 +252,79 @@ bool Float::is_less_or_equal(const Object* o) const {
     }
 }
 
+class Bool : public Primitive {
+public:
+
+/* Constructors */
+explicit Bool(const bool& v) : v_(v) {
+#ifdef DEBUG_PRIMITIVE
+    std::cout << "Bool(const bool& v) : this = " << (void*) this << " v = " << v << std::endl;
+#endif
+}
+
+Bool(const Bool& b) : v_(b.v_) {
+#ifdef DEBUG_PRIMITIVE
+    std::cout << "Bool(const Bool& b) : this = " << (void*) this << " v = " << b.v_ << std::endl;
+#endif
+}
+
+/* Destructor */
+~Bool() override {
+#ifdef DEBUG_PRIMITIVE
+    std::cout << "Entering ~Bool() : this = " << (void*) this << " v = " << v_ << std::endl;
+#endif
+    OBJECT_DESCTRUCT(this);
+#ifdef DEBUG_PRIMITIVE
+    std::cout << "Leaving ~Bool() : this = " << (void*) this << " v = " << v_ << std::endl;
+#endif
+}
+
+/* Assignment */
+Bool& operator=(const double& v) {
+    v_ = v;
+
+    return *this;
+}
+
+/* Getter */
+bool get() const {
+    return v_;
+}
+
+/* Boolean operators */
+template <typename T>
+requires (std::is_same_v<T,bool> || std::is_base_of_v<Object,T>)
+bool operator==(const T& v) const {
+    return v_ == v;
+}
+
+template <typename T>
+requires (std::is_same_v<T,bool> || std::is_base_of_v<Object,T>)
+bool operator!=(const T& v) const {
+    return !(*this == v);
+}
+
+/* Miscellanous */
+inline bool is_equal(const Object* o) const override {
+    if (dynamic_cast<const Bool*>(o) != nullptr) {
+        return dynamic_cast<const Bool*>(o)->v_ == v_;
+    } else {
+        return false;
+    }
+}
+
+string to_string() const override {
+    return std::to_string(v_);
+}
+
+Primitive* clone() const override {
+    return new Bool(v_);
+}
+
+private:
+
+bool v_;
+
+};
+
 };

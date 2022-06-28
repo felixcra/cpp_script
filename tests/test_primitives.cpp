@@ -41,3 +41,13 @@ TEST_CASE("test_float_inequality") {
     REQUIRE(f <= Int(3));
     REQUIRE(f <= Float(3.0));
 }
+
+TEST_CASE("test_bool") {
+    Bool bt(true);
+    Bool bf(false);
+    REQUIRE(bt != bf);
+    REQUIRE(bt == true);
+    REQUIRE(bf == false);
+    REQUIRE(bt.get() == true);
+    REQUIRE(bf.get() == false);
+}
