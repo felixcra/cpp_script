@@ -89,6 +89,7 @@ Element(const Element& e, const bool clone_primitives = false) {
 template <typename T>
 requires (std::is_base_of_v<Object,std::remove_reference_t<T>> ||
           std::is_arithmetic_v<std::remove_reference_t<T>> ||
+          std::is_same_v<std::remove_reference_t<T>,bool> ||
           std::is_same_v<T,string>)
 explicit Element(T&& v) {
     using T_ = std::remove_reference_t<T>;
@@ -116,7 +117,10 @@ explicit Element(T&& v) {
             using T__ = std::remove_const_t<T_>;
 
             // Create a primitive and a reference to it
-            if constexpr (std::is_integral_v<T__>) {
+            if constexpr (std::is_same_v<T__,bool>) {
+                Bool* b = new Bool(v);
+                r_.set(*b,true);
+            } else if constexpr (std::is_integral_v<T__>) {
                 Int* i = new Int(v);
                 r_.set(*i,true);
             } else {
@@ -141,6 +145,7 @@ Element& operator=(const Element& e) {
 
 template <typename T>
 requires (std::is_base_of_v<Object,std::remove_reference_t<T>> || 
+          std::is_same_v<std::remove_reference_t<T>,bool> ||
           std::is_arithmetic_v<std::remove_reference_t<T>>)
 Element& operator=(T&& v) {
     using T_ = std::remove_cvref_t<T>;
@@ -158,11 +163,19 @@ Element& operator=(T&& v) {
 
         return *this;
     } else {
-        if constexpr (std::is_integral_v<T_>) {
+        if constexpr (std::is_same_v<T_,bool>) {
+            if (dynamic_cast<Bool*>(r_.get()) != nullptr) {
+                *dynamic_cast<Bool*>(r_.get()) = v;
+            } else {
+                // Create a Bool and a reference to it
+                Bool* b = new Bool(v);
+                r_.set(*b,true);
+            }
+        } else if constexpr (std::is_integral_v<T_>) {
             if (dynamic_cast<Int*>(r_.get()) != nullptr) {
                 *dynamic_cast<Int*>(r_.get()) = v;
             } else {
-                // Create a primitive and a reference to it
+                // Create an Int and a reference to it
                 Int* i = new Int(v);
                 r_.set(*i,true);
             }
@@ -170,7 +183,7 @@ Element& operator=(T&& v) {
             if (dynamic_cast<Float*>(r_.get()) != nullptr) {
                 *dynamic_cast<Float*>(r_.get()) = v;
             } else {
-                // Create a primitive and a reference to it
+                // Create a Float and a reference to it
                 Float* f = new Float(v);
                 r_.set(*f,true);
             }
@@ -207,13 +220,17 @@ bool operator!=(const string& s) const {
 }
 
 template <typename T>
-requires std::is_arithmetic_v<std::remove_reference_t<T>>
+requires (std::is_arithmetic_v<std::remove_reference_t<T>> ||
+          std::is_same_v<std::remove_reference_t<T>,bool>)
 bool operator==(T&& v) const {
     assert(r_.v_);
 
     using T_ = std::remove_cvref_t<T>;
 
-    if constexpr (std::is_integral_v<T_>) {
+    if constexpr (std::is_same_v<T_,bool>) {
+        const Bool b(v);
+        return r_.o_->is_equal(&b);
+    } else if constexpr (std::is_integral_v<T_>) {
         const Int i(v);
         return r_.o_->is_equal(&i);
     } else {

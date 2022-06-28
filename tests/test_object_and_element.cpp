@@ -124,3 +124,17 @@ TEST_CASE("from_vector_2") {
         });
     }));
 }
+
+TEST_CASE("test_hold_bool") {
+    Element et(true);
+    Element ef(false);
+    REQUIRE(et == true);
+    REQUIRE(ef == false);
+    REQUIRE(et.as<Bool>().get() == true);
+    REQUIRE(ef.as<Bool>().get() == false);
+    Element ex(10);
+    ex = et;
+    REQUIRE(ex == true);
+    ex = ef;
+    REQUIRE(ex == false);
+}
