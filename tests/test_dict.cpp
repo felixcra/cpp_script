@@ -41,6 +41,16 @@ TEST_CASE("test_simple_access_3") {
     REQUIRE(d[s] == 0);
 }
 
+TEST_CASE("test_simple_access_4") {
+    Dict d;
+    d["this"] = std::string("that");
+    REQUIRE(d["this"] == "that");
+    d["hello"] = "world";
+    REQUIRE(d["hello"] == "world");
+    d["foo"] = String("bar");
+    REQUIRE(d["foo"] == "bar");
+}
+
 class C : public Object {
 public:
 

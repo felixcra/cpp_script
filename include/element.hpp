@@ -146,7 +146,8 @@ Element& operator=(const Element& e) {
 template <typename T>
 requires (std::is_base_of_v<Object,std::remove_reference_t<T>> || 
           std::is_same_v<std::remove_reference_t<T>,bool> ||
-          std::is_arithmetic_v<std::remove_reference_t<T>>)
+          std::is_arithmetic_v<std::remove_reference_t<T>> ||
+          std::is_same_v<std::remove_reference_t<T>,string>)
 Element& operator=(T&& v) {
     using T_ = std::remove_cvref_t<T>;
 
@@ -163,7 +164,15 @@ Element& operator=(T&& v) {
 
         return *this;
     } else {
-        if constexpr (std::is_same_v<T_,bool>) {
+        if constexpr (std::is_same_v<T_,string>) {
+            if (dynamic_cast<String*>(r_.get()) != nullptr) {
+                *dynamic_cast<String*>(r_.get()) = v;
+            } else {
+                // Create a String and a reference to it
+                String* s = new String(v);
+                r_.set(*s,true);
+            }
+        } else if constexpr (std::is_same_v<T_,bool>) {
             if (dynamic_cast<Bool*>(r_.get()) != nullptr) {
                 *dynamic_cast<Bool*>(r_.get()) = v;
             } else {
@@ -195,6 +204,10 @@ Element& operator=(T&& v) {
 
 template <is_nested_vector_or_arithmetic T>
 Element& operator=(const vector<T>& v);
+
+Element& operator=(const char* s) {
+    return operator=(string(s));
+}
 
 /* Boolean operators */
 bool operator==(const Element& e) const {
