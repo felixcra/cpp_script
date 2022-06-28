@@ -55,6 +55,11 @@ bool operator!=(const string& s) const {
     return !(*this == s);
 }
 
+/* Getter */
+string get() const {
+    return s_;
+}
+
 /* Miscellanous */
 bool is_equal(const Object* o) const override {
     return dynamic_cast<const String*>(o) != nullptr &&
