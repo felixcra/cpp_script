@@ -147,7 +147,7 @@ template <typename T>
 requires (std::is_base_of_v<Object,std::remove_reference_t<T>> || 
           std::is_same_v<std::remove_reference_t<T>,bool> ||
           std::is_arithmetic_v<std::remove_reference_t<T>> ||
-          std::is_same_v<std::remove_reference_t<T>,string>)
+          std::is_same_v<std::remove_cvref_t<T>,string>)
 Element& operator=(T&& v) {
     using T_ = std::remove_cvref_t<T>;
 
