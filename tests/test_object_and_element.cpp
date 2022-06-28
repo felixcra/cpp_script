@@ -125,7 +125,7 @@ TEST_CASE("from_vector_2") {
     }));
 }
 
-TEST_CASE("test_hold_bool") {
+TEST_CASE("test_hold_bool_1") {
     Element et(true);
     Element ef(false);
     REQUIRE(et == true);
@@ -137,4 +137,11 @@ TEST_CASE("test_hold_bool") {
     REQUIRE(ex == true);
     ex = ef;
     REQUIRE(ex == false);
+}
+
+TEST_CASE("test_hold_bool_2") {
+    Element et(true);
+    Element ef(false);
+    REQUIRE(et.to_string() == "true");
+    REQUIRE(ef.to_string() == "false");
 }

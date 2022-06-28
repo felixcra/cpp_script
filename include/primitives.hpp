@@ -314,7 +314,8 @@ inline bool is_equal(const Object* o) const override {
 }
 
 string to_string() const override {
-    return std::to_string(v_);
+    if (v_) return "true";
+    else    return "false";
 }
 
 Primitive* clone() const override {
