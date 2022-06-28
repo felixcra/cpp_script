@@ -12,3 +12,11 @@ TEST_CASE("test_string") {
     REQUIRE(s != std::string("hellox"));
     REQUIRE(s.to_string() == std::string("hello"));
 }
+
+TEST_CASE("test_assignment") {
+    String s("hello");
+    s = std::string("world");
+    REQUIRE(s == std::string("world"));
+    s = "foo";
+    REQUIRE(s == "foo");
+}

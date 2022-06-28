@@ -46,6 +46,18 @@ explicit String(const String& s) : s_(s.s_) {
     OBJECT_DESCTRUCT(this);
 }
 
+/* Assignment */
+String& operator=(const string& s) {
+    s_ = s;
+
+    return *this;
+}
+
+/* Getter */
+string get() const {
+    return s_;
+}
+
 /* Boolean operators */
 bool operator==(const string& s) const {
     return s_ == s;
@@ -53,11 +65,6 @@ bool operator==(const string& s) const {
 
 bool operator!=(const string& s) const {
     return !(*this == s);
-}
-
-/* Getter */
-string get() const {
-    return s_;
 }
 
 /* Miscellanous */
