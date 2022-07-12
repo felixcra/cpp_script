@@ -19,3 +19,6 @@ Test can be run with:
 ```
 cd build && make && ctest -T memcheck
 ```
+
+### Dependencies
+- Catch2
