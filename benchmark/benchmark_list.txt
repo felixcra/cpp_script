@@ -1,0 +1,9 @@
+Python
+List insertion :	0.6672379970550537s
+Summation :		0.7965900897979736s
+C++ List
+List insertion :	1.17204s
+Summation :		0.15773s
+C++ vector<int>
+List insertion :	0.0397607s
+Summation :		3.7e-08s
