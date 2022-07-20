@@ -274,6 +274,11 @@ bool operator!=(T&& v) const {
 
 /* Miscellaneous */
 template <typename T>
+bool isinstance() const {
+    return dynamic_cast<const T*>(r_.c_get()) != nullptr;
+}
+
+template <typename T>
 requires std::is_base_of_v<Object,T>
 T& as() {
     if (dynamic_cast<T*>(r_.get()) == nullptr) {
@@ -317,8 +322,8 @@ inline std::ostream& operator<<(std::ostream& out, const Element& e) {
 }
 
 template <typename T>
-bool isinstance(const Element& e) {
-    return dynamic_cast<const T*>(e.get().c_get());
+inline bool isinstance(const Element& e) {
+    return e.isinstance<T>();
 }
 
 };
