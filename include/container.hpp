@@ -68,7 +68,7 @@ const Element& c_iter_get() const override {
     return elems_.at(*c_ptr_);
 }
 
-private:
+protected:
 
 const unique_ptr<uint> c_ptr_;
 
